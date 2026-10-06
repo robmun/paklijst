@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10243e">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Paklijst</title>
+<style>
+:root{--navy:#10243e;--gold:#d9a441;--bg:#f4f6f8;--card:#fff;--text:#18212b;--muted:#697586;--line:#e3e7ec;--green:#238636;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+header{background:var(--navy);color:#fff;padding:18px max(18px,calc((100vw - 1000px)/2));position:sticky;top:0;z-index:10;box-shadow:0 2px 10px #0002}
+.header-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:22px;font-weight:750}.sub{font-size:12px;opacity:.72;margin-top:2px}
+main{max-width:1000px;margin:auto;padding:16px 16px 90px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px #00000008}
+.trip{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;font-size:15px}
+.progress-wrap{margin-top:14px}.progress-top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.bar{height:8px;background:#e8ebef;border-radius:9px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--gold);width:0}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar input{flex:1;min-width:180px}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:650;cursor:pointer}.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}.btn.gold{background:var(--gold);color:#17202b;border-color:var(--gold)}.btn.danger{color:var(--danger)}.btn.small{padding:6px 9px;font-size:12px}
+.category{margin-bottom:16px}.cat-head{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 7px}.cat-head h2{font-size:16px;margin:0}.cat-count{font-size:12px;color:var(--muted)}
+.item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);padding:10px 11px;border-radius:11px;margin-bottom:6px}.item.done{opacity:.55}.item.done .name{text-decoration:line-through}.check{width:21px;height:21px;accent-color:var(--green);flex:0 0 auto}.name{flex:1;font-size:14px}.qty{font-size:12px;color:var(--muted);white-space:nowrap}.actions{display:flex;gap:4px}.icon{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:4px}.empty{padding:30px;text-align:center;color:var(--muted)}
+.modal-back{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal{background:#fff;border-radius:18px;padding:20px;width:min(520px,100%);box-shadow:0 20px 50px #0004}.modal h2{margin-top:0}.modal .field{margin-bottom:12px}.modal-actions{display:flex;justify-content:flex-end;gap:8px}
+@media(max-width:650px){.trip{grid-template-columns:1fr 1fr}.trip .wide{grid-column:1/-1}.actions .edit-label{display:none}}
+@media print{header,.toolbar,.trip-card,.actions,.modal-back{display:none!important}body{background:#fff}.card{border:0;box-shadow:none}.item{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div class="header-row"><div><div class="brand">🧳 Paklijst</div><div class="sub">Jouw persoonlijke reischecklist</div></div><button class="btn gold" id="addBtn">＋ Item</button></div></header>
+<main>
+<section class="card trip-card">
+  <div class="trip">
+    <div class="field wide"><label>Reis</label><input id="tripName" placeholder="Bijv. Dublin oktober 2026"></div>
+    <div class="field"><label>Vertrek</label><input id="tripDate" type="date"></div>
+    <div class="field"><label>Reisduur</label><input id="days" type="number" min="1" placeholder="dagen"></div>
+  </div>
+  <div class="progress-wrap"><div class="progress-top"><span id="progressText">0 van 0 ingepakt</span><span id="progressPct">0%</span></div><div class="bar"><i id="bar"></i></div></div>
+</section>
+
+<section class="card">
+  <div class="toolbar">
+    <input class="field" id="search" placeholder="🔎 Zoek in je paklijst…">
+    <select class="btn" id="filter"><option value="all">Alles</option><option value="open">Nog doen</option><option value="done">Ingepakt</option></select>
+    <button class="btn" id="resetBtn">↺ Reset vinkjes</button>
+    <button class="btn" onclick="window.print()">🖨 Print</button>
+  </div>
+</section>
+
+<div id="list"></div>
+</main>
+
+<div class="modal-back" id="modalBack"><div class="modal">
+<h2 id="modalTitle">Item toevoegen</h2>
+<div class="field"><label>Item</label><input id="itemName" autofocus></div>
+<div class="field"><label>Categorie</label><select id="itemCat"></select></div>
+<div class="field"><label>Aantal / opmerking</label><input id="itemQty" placeholder="Bijv. 5x of meenemen"></div>
+<div class="modal-actions"><button class="btn" id="cancelBtn">Annuleren</button><button class="btn primary" id="saveBtn">Opslaan</button></div>
+</div></div>
+
+<script>
+const seed = [
+["Voor vertrek","Out of Office aanzetten"],["Voor vertrek","Buddy in Auto-reply regelen"],["Voor vertrek","Thermostaat programmeren"],["Voor vertrek","Batterijen beveiligingscamera’s checken"],["Voor vertrek","Paspoorten nog lang genoeg geldig check"],["Voor vertrek","Pinpassen op werelddekking"],["Voor vertrek","Zorgverzekeringspasje"],["Voor vertrek","Vaccinatieboekje"],["Voor vertrek","Downloaden Netflix, Spotify, Google Maps"],["Voor vertrek","Lokale apps van bestemming downloaden (taxi, trein, vertalen)"],["Voor vertrek","Visa"],["Voor vertrek","Cash lokaal geld"],["Voor vertrek","Buren vragen gras te maaien en sproeien"],["Voor vertrek","E-sim regelen"],["Voor vertrek","Stoelreservering"],["Voor vertrek","Taxi naar vliegveld of auto parking reserveren"],
+["Dag van vertrek","Verwarming uit"],["Dag van vertrek","AirTags in koffers"],["Dag van vertrek","Hoofdschakelaar autolader uit"],["Dag van vertrek","Lampen op timers binnen"],["Dag van vertrek","Slotje op schuurdeur zetten"],
+["Vliegen","Paspoorten"],["Vliegen","Kopie reisverzekering digitaal mee"],["Vliegen","Kopie paspoort digitaal mee"],["Vliegen","Kussen voor in je nek"],["Vliegen","Extra paar warme sokken"],["Vliegen","Houder voor iPhone in vliegtuigstoel"],["Vliegen","iPhone lader (zowel USB als USB-C)"],["Vliegen","Vouchers e.d. geprint mee"],["Vliegen","Powerbank"],["Vliegen","Pen voor formulieren"],["Vliegen","Flesje water & snacks"],["Vliegen","Oordopjes"],
+["Toilettas","Medicijnen / pillen?"],["Toilettas","Melatonine (slapen)"],["Toilettas","Nagelschaartje"],["Toilettas","Eau de toilette"],["Toilettas","Scheerspullen (zeep & mesjes, groomer)"],["Toilettas","Aluin"],["Toilettas","Deodorant"],["Toilettas","Elektrische tandenborstel en tandpasta"],["Toilettas","Oplader tandenborstel"],["Toilettas","Tandenstokers"],["Toilettas","Natte doekjes"],["Toilettas","Zonnebrand"],["Toilettas","Deet"],["Toilettas","Muggenspul"],["Toilettas","Wattenstaafjes"],["Toilettas","Pleisters (ook blarenpleisters)"],
+["Apparatuur","Leesbrillen"],["Apparatuur","Zonnebril"],["Apparatuur","Stekker adapters / min 2 wereldstekkers"],["Apparatuur","AirPods"],["Apparatuur","iPhone"],["Apparatuur","Kabels voor iPhone"],["Apparatuur","Kabels voor powerbanks"],["Apparatuur","Powerbank(s)"],["Apparatuur","Resmed (+ tas)"],["Apparatuur","Laptop / muis / lader"],
+["Kleding","Boxershorts"],["Kleding","Sokken"],["Kleding","Korte broeken"],["Kleding","T-shirts"],["Kleding","T-shirt om in te slapen"],["Kleding","Lange broeken"],["Kleding","Truien"],["Kleding","Vest"],["Kleding","Overhemd"],["Kleding","Polo’s"],["Kleding","Zwembroek"],["Kleding","Sjaal"],["Kleding","Petje"],["Kleding","Muts"],["Kleding","Jas"],["Kleding","Regenjas"],["Kleding","Poncho"],
+["Schoenen","Sneakers"],["Schoenen","Slippers"],["Schoenen","Instappers"],["Schoenen","Nette schoenen"],
+["Overig","Katoenen beddengoed voor allergie Heleen"],["Overig","Plastic tasje voor vloeistoffen op vliegveld"],["Overig","Plastic tas voor de was"],["Overig","Rugzak mee voor dagtochten"],["Overig","Spelletjes"],["Overig","Drybag / waterdichte zak"]
+].map(([cat,name],i)=>({id:"seed"+i,cat,name,qty:"",done:false}));
+
+const cats=["Voor vertrek","Dag van vertrek","Vliegen","Toilettas","Apparatuur","Kleding","Schoenen","Overig"];
+let state=JSON.parse(localStorage.getItem("paklijst-v1")||"null")||{tripName:"",tripDate:"",days:"",items:seed};
+let editId=null;
+
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem("paklijst-v1",JSON.stringify(state));render()}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function render(){
+ $("tripName").value=state.tripName||"";$("tripDate").value=state.tripDate||"";$("days").value=state.days||"";
+ const q=$("search").value.toLowerCase(), f=$("filter").value;
+ const items=state.items.filter(x=>(!q||x.name.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q))&&(f==="all"||(f==="done"&&x.done)||(f==="open"&&!x.done)));
+ const total=state.items.length, done=state.items.filter(x=>x.done).length, pct=total?Math.round(done/total*100):0;
+ $("progressText").textContent=`${done} van ${total} ingepakt`; $("progressPct").textContent=pct+"%"; $("bar").style.width=pct+"%";
+ $("list").innerHTML=cats.map(cat=>{
+   const arr=items.filter(x=>x.cat===cat); if(!arr.length)return "";
+   const all=state.items.filter(x=>x.cat===cat), d=all.filter(x=>x.done).length;
+   return `<section class="category"><div class="cat-head"><h2>${cat}</h2><span class="cat-count">${d}/${all.length}</span></div>`+
+   arr.map(x=>`<div class="item ${x.done?"done":""}">
+   <input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggle('${x.id}')">
+   <span class="name">${esc(x.name)}</span><span class="qty">${esc(x.qty||"")}</span>
+   <span class="actions"><button class="icon" onclick="edit('${x.id}')" title="Bewerken">✎</button><button class="icon" onclick="removeItem('${x.id}')" title="Verwijderen">×</button></span></div>`).join("")+"</section>"
+ }).join("") || `<div class="card empty">Geen items gevonden.</div>`;
+}
+function toggle(id){const x=state.items.find(x=>x.id===id);if(x){x.done=!x.done;save()}}
+function removeItem(id){const x=state.items.find(x=>x.id===id);if(x&&confirm(`"${x.name}" verwijderen?`)){state.items=state.items.filter(x=>x.id!==id);save()}}
+function openModal(id=null){editId=id;$("modalTitle").textContent=id?"Item bewerken":"Item toevoegen";$("itemCat").innerHTML=cats.map(c=>`<option>${c}</option>`).join("");let x=id&&state.items.find(x=>x.id===id);$("itemName").value=x?.name||"";$("itemQty").value=x?.qty||"";$("itemCat").value=x?.cat||"Overig";$("modalBack").style.display="flex";setTimeout(()=>$("itemName").focus(),50)}
+function edit(id){openModal(id)}
+$("saveBtn").onclick=()=>{let name=$("itemName").value.trim();if(!name)return;if(editId){let x=state.items.find(x=>x.id===editId);Object.assign(x,{name,cat:$("itemCat").value,qty:$("itemQty").value.trim()})}else state.items.push({id:"i"+Date.now(),name,cat:$("itemCat").value,qty:$("itemQty").value.trim(),done:false});$("modalBack").style.display="none";save()}
+$("cancelBtn").onclick=()=>$("modalBack").style.display="none"; $("modalBack").onclick=e=>{if(e.target===$("modalBack"))$("modalBack").style.display="none"};
+$("addBtn").onclick=()=>openModal(); $("search").oninput=render;$("filter").onchange=render;
+$("resetBtn").onclick=()=>{state.items.forEach(x=>x.done=false);save()};
+$("tripName").oninput=e=>{state.tripName=e.target.value;localStorage.setItem("paklijst-v1",JSON.stringify(state))};
+$("tripDate").onchange=e=>{state.tripDate=e.target.value;localStorage.setItem("paklijst-v1",JSON.stringify(state))};
+$("days").oninput=e=>{state.days=e.target.value;localStorage.setItem("paklijst-v1",JSON.stringify(state))};
+render();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body></html>
