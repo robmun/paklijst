@@ -1,63 +1,78 @@
 <!doctype html>
 <html lang="nl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#10243e">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10243e"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg">
 <title>Paklijst</title>
 <style>
 :root{--navy:#10243e;--gold:#d9a441;--bg:#f4f6f8;--card:#fff;--text:#18212b;--muted:#697586;--line:#e3e7ec;--green:#238636;--danger:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{background:var(--navy);color:#fff;padding:18px max(18px,calc((100vw - 1000px)/2));position:sticky;top:0;z-index:10;box-shadow:0 2px 10px #0002}
-.header-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:22px;font-weight:750}.sub{font-size:12px;opacity:.72;margin-top:2px}
-main{max-width:1000px;margin:auto;padding:16px 16px 90px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px #00000008}
-.trip{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;font-size:15px}
-.progress-wrap{margin-top:14px}.progress-top{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.bar{height:8px;background:#e8ebef;border-radius:9px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--gold);width:0}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar input{flex:1;min-width:180px}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:650;cursor:pointer}.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}.btn.gold{background:var(--gold);color:#17202b;border-color:var(--gold)}.btn.danger{color:var(--danger)}.btn.small{padding:6px 9px;font-size:12px}
-.category{margin-bottom:16px}.cat-head{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 7px}.cat-head h2{font-size:16px;margin:0}.cat-count{font-size:12px;color:var(--muted)}
-.item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);padding:10px 11px;border-radius:11px;margin-bottom:6px}.item.done{opacity:.55}.item.done .name{text-decoration:line-through}.check{width:21px;height:21px;accent-color:var(--green);flex:0 0 auto}.name{flex:1;font-size:14px}.qty{font-size:12px;color:var(--muted);white-space:nowrap}.actions{display:flex;gap:4px}.icon{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:4px}.empty{padding:30px;text-align:center;color:var(--muted)}
-.modal-back{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal{background:#fff;border-radius:18px;padding:20px;width:min(520px,100%);box-shadow:0 20px 50px #0004}.modal h2{margin-top:0}.modal .field{margin-bottom:12px}.modal-actions{display:flex;justify-content:flex-end;gap:8px}
-@media(max-width:650px){.trip{grid-template-columns:1fr 1fr}.trip .wide{grid-column:1/-1}.actions .edit-label{display:none}}
-@media print{header,.toolbar,.trip-card,.actions,.modal-back{display:none!important}body{background:#fff}.card{border:0;box-shadow:none}.item{break-inside:avoid}}
-</style>
-</head>
+header{background:var(--navy);color:white;padding:17px max(16px,calc((100vw - 1050px)/2));position:sticky;top:0;z-index:10;box-shadow:0 2px 10px #0002}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-size:22px;font-weight:800}.sub{font-size:12px;opacity:.7}
+nav{max-width:1050px;margin:10px auto 0;display:flex;gap:6px;overflow:auto}nav button{white-space:nowrap;border:0;background:#ffffff18;color:#fff;border-radius:9px;padding:8px 12px;font-weight:650;cursor:pointer}nav button.active{background:var(--gold);color:#17202b}
+main{max-width:1050px;margin:auto;padding:16px 16px 90px}.page{display:none}.page.active{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px #00000008}
+.grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:white}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:650;cursor:pointer}.primary{background:var(--navy);color:white;border-color:var(--navy)}.gold{background:var(--gold);border-color:var(--gold)}.danger{color:var(--danger)}
+.progress{margin-top:14px}.ptop{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.bar{height:8px;background:#e8ebef;border-radius:8px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{padding:13px;background:#f7f8fa;border-radius:12px}.stat b{font-size:22px}.stat small{display:block;color:var(--muted)}
+.tripcard{cursor:pointer}.tripcard:hover{border-color:#c5ccd5}.triptop{display:flex;justify-content:space-between;gap:10px}.tripname{font-size:17px;font-weight:750}.meta{font-size:12px;color:var(--muted);margin-top:4px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar input{flex:1;min-width:180px}
+.cat{margin-bottom:17px}.cathead{display:flex;justify-content:space-between;align-items:center;margin:5px 2px 7px}.cathead h2{font-size:16px;margin:0}.count{font-size:12px;color:var(--muted)}
+.item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);padding:10px 11px;border-radius:11px;margin-bottom:6px}.item.done{opacity:.5}.item.done .name{text-decoration:line-through}.check{width:21px;height:21px;accent-color:var(--green)}.name{flex:1;font-size:14px}.tag{font-size:11px;color:var(--muted);white-space:nowrap}.icons{display:flex;gap:3px}.icon{border:0;background:transparent;color:var(--muted);padding:4px;cursor:pointer}
+.modalback{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal{background:white;border-radius:18px;padding:20px;width:min(560px,100%);max-height:90vh;overflow:auto}.modal h2{margin-top:0}.modal .field{margin-bottom:12px}.modalfoot{display:flex;justify-content:flex-end;gap:8px}
+.checkgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.checkopt{border:1px solid var(--line);padding:9px;border-radius:10px}.checkopt input{margin-right:7px}
+.empty{text-align:center;padding:35px;color:var(--muted)}
+@media(max-width:650px){.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.stats{grid-template-columns:repeat(2,1fr)}.checkgrid{grid-template-columns:1fr}}
+@media print{header,.toolbar,.actions,.icons,.trip-edit,.modalback{display:none!important}body{background:white}.card{border:0;box-shadow:none}}
+</style></head>
 <body>
-<header><div class="header-row"><div><div class="brand">🧳 Paklijst</div><div class="sub">Jouw persoonlijke reischecklist</div></div><button class="btn gold" id="addBtn">＋ Item</button></div></header>
+<header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim</div></div><button class="btn gold" onclick="openItem()">＋ Item</button></div>
+<nav><button id="navTrips" onclick="page('trips')">Mijn reizen</button><button id="navPack" onclick="page('pack')">Paklijst</button><button id="navMaster" onclick="page('master')">Masterlijst</button></nav></header>
+
 <main>
-<section class="card trip-card">
-  <div class="trip">
-    <div class="field wide"><label>Reis</label><input id="tripName" placeholder="Bijv. Dublin oktober 2026"></div>
-    <div class="field"><label>Vertrek</label><input id="tripDate" type="date"></div>
-    <div class="field"><label>Reisduur</label><input id="days" type="number" min="1" placeholder="dagen"></div>
-  </div>
-  <div class="progress-wrap"><div class="progress-top"><span id="progressText">0 van 0 ingepakt</span><span id="progressPct">0%</span></div><div class="bar"><i id="bar"></i></div></div>
+<section id="trips" class="page">
+<div class="card"><div class="hrow"><div><h2 style="margin:0">Mijn reizen</h2><div class="meta">Elke reis heeft zijn eigen checklist.</div></div><button class="btn primary" onclick="newTrip()">＋ Nieuwe reis</button></div></div>
+<div id="tripList"></div>
 </section>
 
-<section class="card">
-  <div class="toolbar">
-    <input class="field" id="search" placeholder="🔎 Zoek in je paklijst…">
-    <select class="btn" id="filter"><option value="all">Alles</option><option value="open">Nog doen</option><option value="done">Ingepakt</option></select>
-    <button class="btn" id="resetBtn">↺ Reset vinkjes</button>
-    <button class="btn" onclick="window.print()">🖨 Print</button>
-  </div>
+<section id="pack" class="page">
+<div class="card">
+ <div class="grid"><div class="field wide"><label>Reis</label><input id="tripName"></div><div class="field"><label>Vertrek</label><input id="tripDate" type="date"></div><div class="field"><label>Dagen</label><input id="days" type="number" min="1"></div></div>
+ <div class="field" style="margin-top:10px"><label>Profiel</label><select id="profile"><option value="">Kies een profiel…</option><option value="city">🏙️ Citytrip</option><option value="beach">🏖️ Strand / warm</option><option value="cold">❄️ Koud weer</option><option value="business">💼 Zakenreis</option><option value="road">🚗 Roadtrip</option><option value="hiking">🥾 Outdoor / wandelen</option></select></div>
+ <div class="progress"><div class="ptop"><span id="progressText"></span><span id="pct"></span></div><div class="bar"><i id="bar"></i></div></div>
+</div>
+<div class="card"><div class="toolbar"><input id="search" placeholder="🔎 Zoek…"><select class="btn" id="filter"><option value="all">Alles</option><option value="open">Nog doen</option><option value="done">Ingepakt</option></select><button class="btn" onclick="applySmart()">✨ Slim aanvullen</button><button class="btn" onclick="window.print()">🖨 Print</button><button class="btn" onclick="resetChecks()">↺ Reset</button></div></div>
+<div id="packList"></div>
 </section>
 
-<div id="list"></div>
+<section id="master" class="page">
+<div class="card"><div class="hrow"><div><h2 style="margin:0">Masterlijst</h2><div class="meta">Jouw persoonlijke bibliotheek. Nieuwe reizen kunnen hieruit worden samengesteld.</div></div><button class="btn primary" onclick="openItem(null,true)">＋ Item</button></div></div>
+<div class="card"><div class="toolbar"><input id="masterSearch" placeholder="🔎 Zoek in masterlijst…"><select class="btn" id="masterCat"></select></div></div>
+<div id="masterList"></div>
+</section>
 </main>
 
-<div class="modal-back" id="modalBack"><div class="modal">
-<h2 id="modalTitle">Item toevoegen</h2>
-<div class="field"><label>Item</label><input id="itemName" autofocus></div>
-<div class="field"><label>Categorie</label><select id="itemCat"></select></div>
-<div class="field"><label>Aantal / opmerking</label><input id="itemQty" placeholder="Bijv. 5x of meenemen"></div>
-<div class="modal-actions"><button class="btn" id="cancelBtn">Annuleren</button><button class="btn primary" id="saveBtn">Opslaan</button></div>
+<div class="modalback" id="modalback"><div class="modal">
+<h2 id="modalTitle">Item</h2>
+<div class="field"><label>Naam</label><input id="iname"></div>
+<div class="field"><label>Categorie</label><select id="icat"></select></div>
+<div class="field"><label>Hoeveelheid / opmerking</label><input id="iqty" placeholder="Bijv. 5x"></div>
+<div class="field"><label>Profielen</label><div class="checkgrid" id="profiles"></div></div>
+<div class="modalfoot"><button class="btn" onclick="closeModal()">Annuleren</button><button class="btn primary" onclick="saveItem()">Opslaan</button></div>
 </div></div>
 
 <script>
-const seed = [
+const CATS=["Voor vertrek","Dag van vertrek","Vliegen","Toilettas","Apparatuur","Kleding","Schoenen","Overig"];
+const PROFILE_NAMES={city:"Citytrip",beach:"Strand / warm",cold:"Koud weer",business:"Zakenreis",road:"Roadtrip",hiking:"Outdoor / wandelen"};
+const RULES={
+ city:["Vliegen","Apparatuur","Kleding","Schoenen","Toilettas"],
+ beach:["Zonnebrand","Zwembroek","Slippers","Muggenspul","Deet","Drybag / waterdichte zak"],
+ cold:["Muts","Sjaal","Truien","Lange broeken","Regenjas","Poncho"],
+ business:["Laptop / muis / lader","Nette schoenen","Overhemd","Polo’s","Vliegen"],
+ road:["Rugzak mee voor dagtochten","Powerbank(s)","Zonnebril","Drybag / waterdichte zak"],
+ hiking:["Rugzak mee voor dagtochten","Drybag / waterdichte zak","Regenjas","Poncho","Zonnebrand","Deet"]
+};
+const seed=[
 ["Voor vertrek","Out of Office aanzetten"],["Voor vertrek","Buddy in Auto-reply regelen"],["Voor vertrek","Thermostaat programmeren"],["Voor vertrek","Batterijen beveiligingscamera’s checken"],["Voor vertrek","Paspoorten nog lang genoeg geldig check"],["Voor vertrek","Pinpassen op werelddekking"],["Voor vertrek","Zorgverzekeringspasje"],["Voor vertrek","Vaccinatieboekje"],["Voor vertrek","Downloaden Netflix, Spotify, Google Maps"],["Voor vertrek","Lokale apps van bestemming downloaden (taxi, trein, vertalen)"],["Voor vertrek","Visa"],["Voor vertrek","Cash lokaal geld"],["Voor vertrek","Buren vragen gras te maaien en sproeien"],["Voor vertrek","E-sim regelen"],["Voor vertrek","Stoelreservering"],["Voor vertrek","Taxi naar vliegveld of auto parking reserveren"],
 ["Dag van vertrek","Verwarming uit"],["Dag van vertrek","AirTags in koffers"],["Dag van vertrek","Hoofdschakelaar autolader uit"],["Dag van vertrek","Lampen op timers binnen"],["Dag van vertrek","Slotje op schuurdeur zetten"],
 ["Vliegen","Paspoorten"],["Vliegen","Kopie reisverzekering digitaal mee"],["Vliegen","Kopie paspoort digitaal mee"],["Vliegen","Kussen voor in je nek"],["Vliegen","Extra paar warme sokken"],["Vliegen","Houder voor iPhone in vliegtuigstoel"],["Vliegen","iPhone lader (zowel USB als USB-C)"],["Vliegen","Vouchers e.d. geprint mee"],["Vliegen","Powerbank"],["Vliegen","Pen voor formulieren"],["Vliegen","Flesje water & snacks"],["Vliegen","Oordopjes"],
@@ -66,43 +81,39 @@ const seed = [
 ["Kleding","Boxershorts"],["Kleding","Sokken"],["Kleding","Korte broeken"],["Kleding","T-shirts"],["Kleding","T-shirt om in te slapen"],["Kleding","Lange broeken"],["Kleding","Truien"],["Kleding","Vest"],["Kleding","Overhemd"],["Kleding","Polo’s"],["Kleding","Zwembroek"],["Kleding","Sjaal"],["Kleding","Petje"],["Kleding","Muts"],["Kleding","Jas"],["Kleding","Regenjas"],["Kleding","Poncho"],
 ["Schoenen","Sneakers"],["Schoenen","Slippers"],["Schoenen","Instappers"],["Schoenen","Nette schoenen"],
 ["Overig","Katoenen beddengoed voor allergie Heleen"],["Overig","Plastic tasje voor vloeistoffen op vliegveld"],["Overig","Plastic tas voor de was"],["Overig","Rugzak mee voor dagtochten"],["Overig","Spelletjes"],["Overig","Drybag / waterdichte zak"]
-].map(([cat,name],i)=>({id:"seed"+i,cat,name,qty:"",done:false}));
+].map(([cat,name],i)=>({id:"m"+i,cat,name,qty:"",profiles:[],always:true}));
 
-const cats=["Voor vertrek","Dag van vertrek","Vliegen","Toilettas","Apparatuur","Kleding","Schoenen","Overig"];
-let state=JSON.parse(localStorage.getItem("paklijst-v1")||"null")||{tripName:"",tripDate:"",days:"",items:seed};
-let editId=null;
+let db=JSON.parse(localStorage.getItem("paklijst-v2")||"null");
+if(!db){db={master:seed,trips:[],active:null};}
+let editId=null, editMaster=false;
 
-const $=id=>document.getElementById(id);
-function save(){localStorage.setItem("paklijst-v1",JSON.stringify(state));render()}
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function render(){
- $("tripName").value=state.tripName||"";$("tripDate").value=state.tripDate||"";$("days").value=state.days||"";
- const q=$("search").value.toLowerCase(), f=$("filter").value;
- const items=state.items.filter(x=>(!q||x.name.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q))&&(f==="all"||(f==="done"&&x.done)||(f==="open"&&!x.done)));
- const total=state.items.length, done=state.items.filter(x=>x.done).length, pct=total?Math.round(done/total*100):0;
- $("progressText").textContent=`${done} van ${total} ingepakt`; $("progressPct").textContent=pct+"%"; $("bar").style.width=pct+"%";
- $("list").innerHTML=cats.map(cat=>{
-   const arr=items.filter(x=>x.cat===cat); if(!arr.length)return "";
-   const all=state.items.filter(x=>x.cat===cat), d=all.filter(x=>x.done).length;
-   return `<section class="category"><div class="cat-head"><h2>${cat}</h2><span class="cat-count">${d}/${all.length}</span></div>`+
-   arr.map(x=>`<div class="item ${x.done?"done":""}">
-   <input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggle('${x.id}')">
-   <span class="name">${esc(x.name)}</span><span class="qty">${esc(x.qty||"")}</span>
-   <span class="actions"><button class="icon" onclick="edit('${x.id}')" title="Bewerken">✎</button><button class="icon" onclick="removeItem('${x.id}')" title="Verwijderen">×</button></span></div>`).join("")+"</section>"
- }).join("") || `<div class="card empty">Geen items gevonden.</div>`;
-}
-function toggle(id){const x=state.items.find(x=>x.id===id);if(x){x.done=!x.done;save()}}
-function removeItem(id){const x=state.items.find(x=>x.id===id);if(x&&confirm(`"${x.name}" verwijderen?`)){state.items=state.items.filter(x=>x.id!==id);save()}}
-function openModal(id=null){editId=id;$("modalTitle").textContent=id?"Item bewerken":"Item toevoegen";$("itemCat").innerHTML=cats.map(c=>`<option>${c}</option>`).join("");let x=id&&state.items.find(x=>x.id===id);$("itemName").value=x?.name||"";$("itemQty").value=x?.qty||"";$("itemCat").value=x?.cat||"Overig";$("modalBack").style.display="flex";setTimeout(()=>$("itemName").focus(),50)}
-function edit(id){openModal(id)}
-$("saveBtn").onclick=()=>{let name=$("itemName").value.trim();if(!name)return;if(editId){let x=state.items.find(x=>x.id===editId);Object.assign(x,{name,cat:$("itemCat").value,qty:$("itemQty").value.trim()})}else state.items.push({id:"i"+Date.now(),name,cat:$("itemCat").value,qty:$("itemQty").value.trim(),done:false});$("modalBack").style.display="none";save()}
-$("cancelBtn").onclick=()=>$("modalBack").style.display="none"; $("modalBack").onclick=e=>{if(e.target===$("modalBack"))$("modalBack").style.display="none"};
-$("addBtn").onclick=()=>openModal(); $("search").oninput=render;$("filter").onchange=render;
-$("resetBtn").onclick=()=>{state.items.forEach(x=>x.done=false);save()};
-$("tripName").oninput=e=>{state.tripName=e.target.value;localStorage.setItem("paklijst-v1",JSON.stringify(state))};
-$("tripDate").onchange=e=>{state.tripDate=e.target.value;localStorage.setItem("paklijst-v1",JSON.stringify(state))};
-$("days").oninput=e=>{state.days=e.target.value;localStorage.setItem("paklijst-v1",JSON.stringify(state))};
-render();
-if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
-</script>
-</body></html>
+function save(){localStorage.setItem("paklijst-v2",JSON.stringify(db));render()}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(p).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.getElementById("nav"+p[0].toUpperCase()+p.slice(1)).classList.add("active");render()}
+function activeTrip(){return db.trips.find(t=>t.id===db.active)}
+function newTrip(){let t={id:"t"+Date.now(),name:"Nieuwe reis",date:"",days:"",profile:"",items:[]};db.trips.unshift(t);db.active=t.id;buildFromMaster(t);save();page("pack")}
+function buildFromMaster(t){t.items=db.master.filter(x=>x.always).map(x=>({id:"i"+Date.now()+Math.random(),masterId:x.id,name:x.name,cat:x.cat,qty:x.qty||"",done:false}))}
+function render(){renderTrips();renderPack();renderMaster()}
+function renderTrips(){let el=document.getElementById("tripList");el.innerHTML=db.trips.map(t=>{let d=t.items.filter(x=>x.done).length,total=t.items.length,p=total?Math.round(d/total*100):0;return `<div class="card tripcard" onclick="openTrip('${t.id}')"><div class="triptop"><div><div class="tripname">${esc(t.name||"Naamloze reis")}</div><div class="meta">${t.date||"Geen datum"} · ${t.days?t.days+" dagen":"duur onbekend"} · ${PROFILE_NAMES[t.profile]||"geen profiel"}</div></div><b>${p}%</b></div><div class="bar"><i style="width:${p}%"></i></div><div class="meta" style="margin-top:8px">${d}/${total} items ingepakt</div></div>`}).join("")||`<div class="card empty">Nog geen reizen. Maak je eerste reis aan.</div>`}
+function renderPack(){let t=activeTrip();if(!t)return;document.getElementById("tripName").value=t.name;document.getElementById("tripDate").value=t.date;document.getElementById("days").value=t.days;document.getElementById("profile").value=t.profile;let q=document.getElementById("search").value.toLowerCase(),f=document.getElementById("filter").value,items=t.items.filter(x=>(!q||x.name.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q))&&(f==="all"||(f==="done"&&x.done)||(f==="open"&&!x.done)));let total=t.items.length,d=t.items.filter(x=>x.done).length,p=total?Math.round(d/total*100):0;document.getElementById("progressText").textContent=`${d} van ${total} ingepakt`;document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";
+document.getElementById("packList").innerHTML=CATS.map(cat=>{let a=items.filter(x=>x.cat===cat),all=t.items.filter(x=>x.cat===cat);if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${cat}</h2><span class="count">${all.filter(x=>x.done).length}/${all.length}</span></div>`+a.map(x=>itemHTML(x,t.id)).join("")+"</section>`}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
+function itemHTML(x,tid){return `<div class="item ${x.done?"done":""}"><input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggle('${tid}','${x.id}')"><span class="name">${esc(x.name)}</span><span class="tag">${esc(x.qty||"")}</span><span class="icons"><button class="icon" onclick="editTripItem('${tid}','${x.id}')">✎</button><button class="icon" onclick="removeTripItem('${tid}','${x.id}')">×</button></span></div>`}
+function renderMaster(){let q=document.getElementById("masterSearch").value.toLowerCase(),cat=document.getElementById("masterCat").value;document.getElementById("masterList").innerHTML=CATS.map(c=>{let a=db.master.filter(x=>x.cat===c&&(!q||x.name.toLowerCase().includes(q))&&(!cat||c===cat));if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${c}</h2><span class="count">${a.length}</span></div>`+a.map(x=>`<div class="item"><span class="name">${esc(x.name)}</span><span class="tag">${x.always?"⭐ altijd":""}</span><span class="icons"><button class="icon" onclick="openItem('${x.id}',true)">✎</button><button class="icon" onclick="removeMaster('${x.id}')">×</button></span></div>`).join("")+"</section>`}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
+function openTrip(id){db.active=id;save();page("pack")}
+function toggle(tid,id){let t=db.trips.find(t=>t.id===tid),x=t.items.find(x=>x.id===id);x.done=!x.done;save()}
+function removeTripItem(tid,id){let t=db.trips.find(t=>t.id===tid);t.items=t.items.filter(x=>x.id!==id);save()}
+function resetChecks(){let t=activeTrip();t.items.forEach(x=>x.done=false);save()}
+function applySmart(){let t=activeTrip();let p=t.profile;if(!p){alert("Kies eerst een reisprofiel.");return}let names=RULES[p]||[];let masterHits=db.master.filter(x=>names.includes(x.name)||names.includes(x.cat));let existing=new Set(t.items.map(x=>x.masterId));masterHits.forEach(x=>{if(!existing.has(x.id))t.items.push({id:"i"+Date.now()+Math.random(),masterId:x.id,name:x.name,cat:x.cat,qty:x.qty||"",done:false})});save();alert(`${masterHits.filter(x=>!existing.has(x.id)).length} passende items toegevoegd.`)}
+function openItem(id=null,master=false){editId=id;editMaster=master;document.getElementById("modalTitle").textContent=id?"Item bewerken":"Item toevoegen";document.getElementById("icat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");document.getElementById("profiles").innerHTML=Object.entries(PROFILE_NAMES).map(([k,v])=>`<label class="checkopt"><input type="checkbox" value="${k}">${v}</label>`).join("");let x=id?db.master.find(x=>x.id===id):null;document.getElementById("iname").value=x?.name||"";document.getElementById("icat").value=x?.cat||"Overig";document.getElementById("iqty").value=x?.qty||"";document.querySelectorAll("#profiles input").forEach(c=>c.checked=x?.profiles?.includes(c.value));document.getElementById("modalback").style.display="flex";setTimeout(()=>document.getElementById("iname").focus(),30)}
+function editTripItem(tid,id){let t=db.trips.find(t=>t.id===tid),x=t.items.find(x=>x.id===id);editId=id;editMaster=false;document.getElementById("modalTitle").textContent="Item bewerken";document.getElementById("icat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");document.getElementById("profiles").innerHTML="";document.getElementById("iname").value=x.name;document.getElementById("icat").value=x.cat;document.getElementById("iqty").value=x.qty||"";document.getElementById("modalback").style.display="flex"}
+function saveItem(){let name=document.getElementById("iname").value.trim();if(!name)return;let cat=document.getElementById("icat").value,qty=document.getElementById("iqty").value.trim(),profiles=[...document.querySelectorAll("#profiles input:checked")].map(x=>x.value);if(editMaster){let x=editId&&db.master.find(x=>x.id===editId);if(x)Object.assign(x,{name,cat,qty,profiles});else db.master.push({id:"m"+Date.now(),name,cat,qty,profiles,always:true})}else{let t=activeTrip(),x=editId&&t.items.find(x=>x.id===editId);if(x)Object.assign(x,{name,cat,qty});else t.items.push({id:"i"+Date.now(),name,cat,qty,done:false})}closeModal();save()}
+function closeModal(){document.getElementById("modalback").style.display="none"}
+function removeMaster(id){let x=db.master.find(x=>x.id===id);if(confirm(`"${x.name}" verwijderen uit de masterlijst?`)){db.master=db.master.filter(x=>x.id!==id);save()}}
+["tripName","tripDate","days","profile"].forEach(id=>document.getElementById(id).onchange=e=>{let t=activeTrip();t[{tripName:"name",tripDate:"date",days:"days",profile:"profile"}[id]]=e.target.value;save()});
+document.getElementById("search").oninput=render;document.getElementById("filter").onchange=render;document.getElementById("masterSearch").oninput=render;
+document.getElementById("masterCat").innerHTML=`<option value="">Alle categorieën</option>`+CATS.map(c=>`<option>${c}</option>`).join("");document.getElementById("masterCat").onchange=render;
+document.getElementById("modalback").onclick=e=>{if(e.target===e.currentTarget)closeModal()};
+if(db.trips.length&&!db.active)db.active=db.trips[0].id;
+page(db.trips.length?"pack":"trips");
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
+</script></body></html>
