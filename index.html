@@ -24,7 +24,27 @@ main{max-width:1050px;margin:auto;padding:16px 16px 90px}.page{display:none}.pag
 .empty{text-align:center;padding:35px;color:var(--muted)}
 @media(max-width:650px){.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.stats{grid-template-columns:repeat(2,1fr)}.checkgrid{grid-template-columns:1fr}}
 @media print{header,.toolbar,.actions,.icons,.trip-edit,.modalback{display:none!important}body{background:white}.card{border:0;box-shadow:none}}
-</style></head>
+</style>
+<style id="v3-mobile">
+:root{--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+html{-webkit-text-size-adjust:100%}
+body{padding-top:max(0px,var(--safe-top));padding-bottom:max(0px,var(--safe-bottom))}
+button,input,select,textarea{min-height:44px}
+input,select,textarea{font-size:16px!important}
+button{touch-action:manipulation}
+@media(max-width:700px){
+ body{padding-bottom:calc(72px + var(--safe-bottom))}
+ .v3-bottom-nav{position:fixed;z-index:999;left:0;right:0;bottom:0;padding:8px 10px calc(8px + var(--safe-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid #ddd;display:flex;gap:8px}
+ .v3-bottom-nav button{flex:1;min-height:48px;border-radius:14px}
+}
+@media(min-width:701px){.v3-bottom-nav{display:none}}
+.v3-export-panel{margin:20px 0;padding:16px;border:1px solid #ddd;border-radius:16px;background:rgba(127,127,127,.05)}
+.v3-export-panel h3{margin:0 0 8px}
+.v3-export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.v3-export-grid button{width:100%}
+.v3-small{font-size:.9rem;opacity:.75}
+</style>
+</head>
 <body>
 <header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim</div></div><button class="btn gold" onclick="openItem()">＋ Item</button></div>
 <nav><button id="navTrips" onclick="page('trips')">Mijn reizen</button><button id="navPack" onclick="page('pack')">Paklijst</button><button id="navMaster" onclick="page('master')">Masterlijst</button></nav></header>
@@ -116,4 +136,42 @@ document.getElementById("modalback").onclick=e=>{if(e.target===e.currentTarget)c
 if(db.trips.length&&!db.active)db.active=db.trips[0].id;
 page(db.trips.length?"pack":"trips");
 if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
-</script></body></html>
+</script>
+<section class="v3-export-panel" id="v3ExportPanel">
+<h3>Export & backup</h3>
+<div class="v3-small">De app gebruikt alleen lokale opslag. Maak af en toe een JSON-backup om je gegevens veilig te bewaren.</div>
+<div class="v3-export-grid" style="margin-top:12px">
+<button type="button" id="v3ExportCsv">Huidige reis → CSV</button>
+<button type="button" id="v3ExportTxt">Huidige reis → tekst</button>
+<button type="button" id="v3ExportJson">Volledige backup → JSON</button>
+<button type="button" id="v3ImportJson">JSON backup herstellen</button>
+<input type="file" id="v3ImportFile" accept=".json,application/json" hidden>
+</div>
+</section>
+<nav class="v3-bottom-nav" aria-label="Snelle acties">
+<button type="button" id="v3NavTop">⬆️ Boven</button>
+<button type="button" id="v3NavExport">📤 Export</button>
+<button type="button" id="v3NavNew">➕ Nieuwe reis</button>
+</nav>
+
+<script id="v3-enhancements">
+(()=> {
+ const download=(name,content,type)=>{const b=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+ const storage=()=>{const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);try{o[k]=JSON.parse(localStorage.getItem(k))}catch{o[k]=localStorage.getItem(k)}}return o};
+ const state=()=>{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i),r=localStorage.getItem(k);try{const v=JSON.parse(r);if(v&&typeof v==='object'&&(v.items||v.trips||v.masterItems||v.currentTrip||v.activeTrip))return v}catch{}}return null};
+ const tripName=()=>{const s=state();return String(s?.currentTrip?.name||s?.activeTrip?.name||s?.trip?.name||'paklijst').replace(/[^\w-]+/g,'-').toLowerCase()};
+ const items=()=>{const s=state()||{};const t=s.currentTrip||s.activeTrip||s.trip;return (t&&(t.items||t.list))||s.items||s.masterItems||[]};
+ const csv=()=>{const rows=[['Categorie','Item','Aantal','Notitie','Afgevinkt']];for(const x of items())rows.push([x.category||x.cat||'',x.name||x.title||'',x.quantity||x.qty||1,x.note||'',x.checked||x.done?'Ja':'Nee']);return rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n')};
+ const txt=()=>items().map(x=>`${x.checked||x.done?'✓':'☐'} ${x.name||x.title||'Item'}${x.quantity?' ('+x.quantity+')':''}${x.note?' — '+x.note:''}`).join('\n');
+ document.getElementById('v3ExportCsv')?.addEventListener('click',()=>download(tripName()+'.csv','\ufeff'+csv(),'text/csv;charset=utf-8'));
+ document.getElementById('v3ExportTxt')?.addEventListener('click',()=>{const t=txt();if(navigator.share)navigator.share({title:'Paklijst',text:t}).catch(()=>download(tripName()+'.txt',t,'text/plain;charset=utf-8'));else download(tripName()+'.txt',t,'text/plain;charset=utf-8')});
+ document.getElementById('v3ExportJson')?.addEventListener('click',()=>download('paklijst-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({app:'Paklijst v3',exportedAt:new Date().toISOString(),localStorage:storage()},null,2),'application/json;charset=utf-8'));
+ const fi=document.getElementById('v3ImportFile');
+ document.getElementById('v3ImportJson')?.addEventListener('click',()=>fi?.click());
+ fi?.addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const p=JSON.parse(await f.text()),d=p.localStorage||p;if(!d||typeof d!=='object')throw Error('Ongeldige backup');if(!confirm('Dit vervangt de lokale gegevens op dit apparaat. Doorgaan?'))return;for(const[k,v]of Object.entries(d))localStorage.setItem(k,typeof v==='string'?v:JSON.stringify(v));alert('Backup hersteld. De app wordt opnieuw geladen.');location.reload()}catch(err){alert('Backup kon niet worden hersteld: '+err.message)}finally{e.target.value=''}});
+ document.getElementById('v3NavTop')?.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+ document.getElementById('v3NavExport')?.addEventListener('click',()=>document.getElementById('v3ExportPanel')?.scrollIntoView({behavior:'smooth'}));
+ document.getElementById('v3NavNew')?.addEventListener('click',()=>{const b=[...document.querySelectorAll('button')].find(x=>/nieuwe reis|new trip/i.test(x.textContent));b?.click()});
+})();
+</script>
+</body></html>

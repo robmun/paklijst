@@ -1,17 +1,18 @@
-# Paklijst v2
-Persoonlijke lokale PWA. Geen accounts, geen Firebase, geen server.
+# Paklijst v3
 
-## v2
-- Meerdere reizen
-- Eigen reisnaam/datum/duur
-- Masterlijst
-- Nieuwe reis start met alle "altijd"-items
-- Reisprofielen: citytrip, strand/warm, koud, zakenreis, roadtrip, outdoor
-- Slim aanvullen op basis van profiel
-- Items toevoegen/bewerken/verwijderen
-- Categorieën, zoeken, filters, voortgang
-- Offline/PWA
-- LocalStorage
+Persoonlijke offline-first paklijst-app.
+
+## v3
+- iPhone/iPad-first: safe areas, grotere touch targets, 16px invoervelden
+- mobiele onderbalk
+- huidige reis exporteren als CSV
+- huidige reis delen/exporteren als tekst
+- volledige lokale backup als JSON
+- JSON backup herstellen
+- geen accounts, Firebase of server nodig
+
+## Let op
+De gegevens staan lokaal in de browser. Maak regelmatig een JSON-backup, zeker voordat je Safari-data wist of van apparaat wisselt.
 
 ## GitHub Pages
-Upload de vier bestanden naar een repo en activeer Pages.
+Zet deze bestanden in je repository en activeer GitHub Pages.
