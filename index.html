@@ -44,6 +44,15 @@ button{touch-action:manipulation}
 .v3-export-grid button{width:100%}
 .v3-small{font-size:.9rem;opacity:.75}
 </style>
+
+<style id="v31-style">
+.v31-transfer{background:linear-gradient(180deg,#fff,#f8fafc)}
+.v31-transfer h3{font-size:18px}
+@media(max-width:700px){
+ .v31-transfer .actions{display:grid;grid-template-columns:1fr}
+ .v31-transfer .actions button{width:100%}
+}
+</style>
 </head>
 <body>
 <header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim</div></div><button class="btn gold" onclick="openItem()">＋ Item</button></div>
@@ -52,6 +61,19 @@ button{touch-action:manipulation}
 <main>
 <section id="trips" class="page">
 <div class="card"><div class="hrow"><div><h2 style="margin:0">Mijn reizen</h2><div class="meta">Elke reis heeft zijn eigen checklist.</div></div><button class="btn primary" onclick="newTrip()">＋ Nieuwe reis</button></div></div>
+
+<div class="card v31-transfer">
+  <h3 style="margin:0 0 6px">📱 Op een ander apparaat gebruiken</h3>
+  <div class="meta" style="font-size:14px;line-height:1.45">
+    De app synchroniseert bewust niet via een account. Gebruik een JSON-backup om je
+    masterlijst en reizen van je computer naar je iPhone/iPad over te zetten.
+  </div>
+  <div class="actions" style="margin-top:10px">
+    <button class="btn primary" type="button" onclick="document.getElementById('v31ImportFile').click()">⬇️ Backup importeren</button>
+    <button class="btn" type="button" onclick="v31ShareBackup()">📤 Backup delen</button>
+  </div>
+  <input id="v31ImportFile" type="file" accept=".json,application/json" hidden>
+</div>
 <div id="tripList"></div>
 </section>
 
@@ -172,6 +194,114 @@ if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
  document.getElementById('v3NavTop')?.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
  document.getElementById('v3NavExport')?.addEventListener('click',()=>document.getElementById('v3ExportPanel')?.scrollIntoView({behavior:'smooth'}));
  document.getElementById('v3NavNew')?.addEventListener('click',()=>{const b=[...document.querySelectorAll('button')].find(x=>/nieuwe reis|new trip/i.test(x.textContent));b?.click()});
+})();
+</script>
+
+<script id="v31-enhancements">
+(() => {
+  // v3.1: on a completely new device, create the first trip automatically.
+  // Existing data is never overwritten.
+  try {
+    if (typeof db !== 'undefined' && db && Array.isArray(db.trips) && db.trips.length === 0) {
+      const t = {
+        id: "t" + Date.now(),
+        name: "Mijn eerste reis",
+        date: "",
+        days: "",
+        profile: "",
+        items: []
+      };
+      if (typeof buildFromMaster === "function") buildFromMaster(t);
+      db.trips.unshift(t);
+      db.active = t.id;
+      localStorage.setItem("paklijst-v2", JSON.stringify(db));
+    }
+  } catch (e) {}
+
+  const backupPayload = () => {
+    const localStorageData = {};
+    for (let i=0; i<localStorage.length; i++) {
+      const k = localStorage.key(i);
+      try { localStorageData[k] = JSON.parse(localStorage.getItem(k)); }
+      catch { localStorageData[k] = localStorage.getItem(k); }
+    }
+    return {
+      app: "Paklijst",
+      version: "3.1",
+      exportedAt: new Date().toISOString(),
+      localStorage: localStorageData
+    };
+  };
+
+  const restore = async (file) => {
+    try {
+      const payload = JSON.parse(await file.text());
+      const data = payload.localStorage || payload;
+      if (!data || typeof data !== "object") throw new Error("Dit is geen geldige Paklijst-backup.");
+      if (!data["paklijst-v2"]) throw new Error("Deze backup bevat geen Paklijst-gegevens.");
+      if (!confirm("Je huidige gegevens op dit apparaat worden vervangen door de backup. Doorgaan?")) return;
+      for (const [key, value] of Object.entries(data)) {
+        localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+      }
+      alert("Backup geïmporteerd. De Paklijst wordt opnieuw geladen.");
+      location.reload();
+    } catch (err) {
+      alert("Importeren mislukt: " + err.message);
+    }
+  };
+
+  document.getElementById("v31ImportFile")?.addEventListener("change", e => {
+    const file = e.target.files?.[0];
+    if (file) restore(file);
+    e.target.value = "";
+  });
+
+  window.v31ShareBackup = async () => {
+    const json = JSON.stringify(backupPayload(), null, 2);
+    const file = new File(
+      [json],
+      "paklijst-backup-" + new Date().toISOString().slice(0,10) + ".json",
+      {type:"application/json"}
+    );
+
+    if (navigator.canShare && navigator.canShare({files:[file]})) {
+      try {
+        await navigator.share({
+          title: "Paklijst backup",
+          text: "Paklijst backup — importeer dit bestand op je iPhone/iPad.",
+          files: [file]
+        });
+        return;
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+      }
+    }
+
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    alert("Backupbestand gemaakt. Stuur dit JSON-bestand bijvoorbeeld via WhatsApp, e-mail of AirDrop naar je iPhone.");
+  };
+
+  // Replace the generic JSON export with the share-friendly v3.1 version.
+  document.getElementById("v3ExportJson")?.addEventListener("click", () => window.v31ShareBackup());
+
+  // If the page was opened without an active trip, go straight to the newly created one.
+  try {
+    if (typeof db !== "undefined" && db?.trips?.length && typeof page === "function") {
+      if (!db.active) db.active = db.trips[0].id;
+      localStorage.setItem("paklijst-v2", JSON.stringify(db));
+      page("pack");
+    }
+  } catch (e) {}
+
+  // Service worker for real installable PWA behavior.
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 })();
 </script>
 </body></html>
