@@ -1,6 +1,14 @@
-# Paklijst v3.2
+# Paklijst v3.3
 
 Persoonlijke, offline-first paklijst voor GitHub Pages.
+
+## v3.3 — slepen
+- Elke regel heeft rechts een greep **⠿**. Houd die vast en sleep het item naar een andere plek.
+- Werkt met vinger (iPhone/iPad) en muis, in de paklijst en in de masterlijst.
+- Sleep je een item naar een andere categorie, dan verhuist het mee naar die categorie.
+- Bij de boven- of onderrand scrolt de lijst automatisch mee.
+- De volgorde wordt opgeslagen en zit ook in de backup.
+- Een nieuwe reis neemt de volgorde van de masterlijst over.
 
 ## v3.2 — bugfixes
 - **CSV- en tekstexport werken weer.** Ze waren leeg; nu staan alle items van de huidige reis erin, per categorie. Te vinden in de werkbalk van de paklijst (📤 Delen en CSV).

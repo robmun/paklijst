@@ -38,7 +38,11 @@ button,input,select{min-height:44px}input,select{font-size:16px!important}button
  .transfer .actions{display:grid;grid-template-columns:1fr}
 }
 @media(max-width:650px){.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.checkgrid{grid-template-columns:1fr}}
-@media print{header,.toolbar,.actions,.icons,.modalback,.bottom-nav,.noprint{display:none!important}body{background:white;padding:0}.card{border:0;box-shadow:none}}
+.grip{display:flex;align-items:center;justify-content:center;width:36px;align-self:stretch;margin:-10px -11px -10px -4px;color:#9aa4b2;font-size:20px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.item.dragging{position:fixed;z-index:50;margin:0;pointer-events:none;box-shadow:0 10px 30px #0003;transform:scale(1.02);opacity:.95;cursor:grabbing}
+.item.placeholder{background:transparent;border:2px dashed var(--gold)}
+body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
+@media print{.grip{display:none!important}header,.toolbar,.actions,.icons,.modalback,.bottom-nav,.noprint{display:none!important}body{background:white;padding:0}.card{border:0;box-shadow:none}}
 </style>
 </head>
 <body>
@@ -97,7 +101,7 @@ button,input,select{min-height:44px}input,select{font-size:16px!important}button
 </div></div>
 
 <script>
-const KEY="paklijst-v2", VERSION="3.2";
+const KEY="paklijst-v2", VERSION="3.3";
 const CATS=["Voor vertrek","Dag van vertrek","Vliegen","Toilettas","Apparatuur","Kleding","Schoenen","Overig"];
 const PROFILE_NAMES={city:"🏙️ Citytrip",beach:"🏖️ Strand / warm",cold:"❄️ Koud weer",business:"💼 Zakenreis",road:"🚗 Roadtrip",hiking:"🥾 Outdoor / wandelen"};
 // Standaard profielkoppelingen (op itemnaam). Aanpasbaar per item in de masterlijst.
@@ -173,10 +177,70 @@ function renderPack(){const t=activeTrip();if(!t)return;
  const items=t.items.filter(x=>(!q||x.name.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q))&&(f==="all"||(f==="done"&&x.done)||(f==="open"&&!x.done)));
  const total=t.items.length,d=t.items.filter(x=>x.done).length,p=total?Math.round(d/total*100):0;
  document.getElementById("progressText").textContent=`${d} van ${total} ingepakt`;document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";
- document.getElementById("packList").innerHTML=CATS.map(cat=>{const a=items.filter(x=>x.cat===cat),all=t.items.filter(x=>x.cat===cat);if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${cat}</h2><span class="count">${all.filter(x=>x.done).length}/${all.length}</span></div>`+a.map(x=>itemHTML(x,t.id)).join("")+"</section>"}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
-function itemHTML(x,tid){return `<div class="item ${x.done?"done":""}"><input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggle('${tid}','${x.id}')"><span class="name">${esc(x.name)}</span><span class="tag">${esc(x.qty||"")}</span><span class="icons"><button class="icon" title="Bewerken" onclick="openItem('${x.id}',false)">✎</button><button class="icon" title="Verwijderen" onclick="removeTripItem('${tid}','${x.id}')">×</button></span></div>`}
+ document.getElementById("packList").innerHTML=CATS.map(cat=>{const a=items.filter(x=>x.cat===cat),all=t.items.filter(x=>x.cat===cat);if(!a.length)return "";return `<section class="cat" data-cat="${esc(cat)}"><div class="cathead"><h2>${cat}</h2><span class="count">${all.filter(x=>x.done).length}/${all.length}</span></div>`+a.map(x=>itemHTML(x,t.id)).join("")+"</section>"}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
+function itemHTML(x,tid){return `<div class="item ${x.done?"done":""}" data-id="${x.id}"><input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggle('${tid}','${x.id}')"><span class="name">${esc(x.name)}</span><span class="tag">${esc(x.qty||"")}</span><span class="icons"><button class="icon" title="Bewerken" onclick="openItem('${x.id}',false)">✎</button><button class="icon" title="Verwijderen" onclick="removeTripItem('${tid}','${x.id}')">×</button></span><span class="grip" title="Slepen om te verplaatsen" onpointerdown="startDrag(event,'trip')">⠿</span></div>`}
 function renderMaster(){const q=document.getElementById("masterSearch").value.toLowerCase(),cat=document.getElementById("masterCat").value;
- document.getElementById("masterList").innerHTML=CATS.map(c=>{const a=db.master.filter(x=>x.cat===c&&(!q||x.name.toLowerCase().includes(q))&&(!cat||c===cat));if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${c}</h2><span class="count">${a.length}</span></div>`+a.map(x=>`<div class="item"><button class="icon" title="${x.always?"Altijd meenemen — tik om uit te zetten":"Alleen via profiel — tik om altijd mee te nemen"}" onclick="toggleAlways('${x.id}')">${x.always?"⭐":"☆"}</button><span class="name">${esc(x.name)}${x.qty?` <span class="tag">· ${esc(x.qty)}</span>`:""}</span><span class="tag">${x.profiles.map(p=>PROFILE_NAMES[p]?.split(" ")[0]||"").join(" ")}</span><span class="icons"><button class="icon" title="Bewerken" onclick="openItem('${x.id}',true)">✎</button><button class="icon" title="Verwijderen" onclick="removeMaster('${x.id}')">×</button></span></div>`).join("")+"</section>"}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
+ document.getElementById("masterList").innerHTML=CATS.map(c=>{const a=db.master.filter(x=>x.cat===c&&(!q||x.name.toLowerCase().includes(q))&&(!cat||c===cat));if(!a.length)return "";return `<section class="cat" data-cat="${esc(c)}"><div class="cathead"><h2>${c}</h2><span class="count">${a.length}</span></div>`+a.map(x=>`<div class="item" data-id="${x.id}"><button class="icon" title="${x.always?"Altijd meenemen — tik om uit te zetten":"Alleen via profiel — tik om altijd mee te nemen"}" onclick="toggleAlways('${x.id}')">${x.always?"⭐":"☆"}</button><span class="name">${esc(x.name)}${x.qty?` <span class="tag">· ${esc(x.qty)}</span>`:""}</span><span class="tag">${x.profiles.map(p=>PROFILE_NAMES[p]?.split(" ")[0]||"").join(" ")}</span><span class="icons"><button class="icon" title="Bewerken" onclick="openItem('${x.id}',true)">✎</button><button class="icon" title="Verwijderen" onclick="removeMaster('${x.id}')">×</button></span><span class="grip" title="Slepen om te verplaatsen" onpointerdown="startDrag(event,'master')">⠿</span></div>`).join("")+"</section>"}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
+
+/* ---------- Slepen om te verplaatsen (muis + touch) ---------- */
+let drag=null;
+function startDrag(e,list){
+ if(drag||(e.pointerType==="mouse"&&e.button!==0))return;
+ e.preventDefault();
+ const el=e.currentTarget.closest(".item"),r=el.getBoundingClientRect();
+ const ph=document.createElement("div");ph.className="item placeholder";ph.style.height=r.height+"px";
+ el.after(ph);
+ Object.assign(el.style,{width:r.width+"px",left:r.left+"px",top:r.top+"px"});el.classList.add("dragging");
+ document.body.classList.add("is-dragging");
+ drag={el,ph,list,id:el.dataset.id,offY:e.clientY-r.top,y:e.clientY,container:el.closest("#packList,#masterList"),pid:e.pointerId};
+ navigator.vibrate?.(8);
+ addEventListener("pointermove",onDragMove,{passive:false});
+ addEventListener("pointerup",endDrag);addEventListener("pointercancel",cancelDrag);
+ drag.raf=requestAnimationFrame(dragTick);
+}
+function onDragMove(e){if(!drag||e.pointerId!==drag.pid)return;e.preventDefault();drag.y=e.clientY;drag.el.style.top=(e.clientY-drag.offY)+"px";placePlaceholder()}
+function placePlaceholder(){
+ const y=drag.y,items=[...drag.container.querySelectorAll(".item[data-id]:not(.dragging)")];
+ let target=items.find(it=>{const r=it.getBoundingClientRect();return y<r.top+r.height/2});
+ if(target){
+  const sec=target.closest(".cat"),first=sec.querySelector(".item[data-id]:not(.dragging)");
+  const prevSec=sec.previousElementSibling;
+  // Boven de kop van een categorie? Dan hoort hij nog bij de vorige categorie.
+  if(target===first&&prevSec?.classList.contains("cat")&&y<sec.querySelector(".cathead").getBoundingClientRect().top){prevSec.appendChild(drag.ph);return}
+  if(target.previousElementSibling!==drag.ph)target.before(drag.ph);
+ }else{
+  const last=items[items.length-1];if(last&&last.nextElementSibling!==drag.ph)last.closest(".cat").appendChild(drag.ph);
+ }
+}
+function dragTick(){
+ if(!drag)return;
+ const top=document.querySelector("header").getBoundingClientRect().bottom,bn=document.querySelector(".bottom-nav"),bottom=bn&&getComputedStyle(bn).display!=="none"?bn.getBoundingClientRect().top:innerHeight;
+ let dy=0;if(drag.y<top+50)dy=-Math.ceil((top+50-drag.y)/6);else if(drag.y>bottom-50)dy=Math.ceil((drag.y-(bottom-50))/6);
+ if(dy){scrollBy(0,Math.max(-20,Math.min(20,dy)));placePlaceholder()}
+ drag.raf=requestAnimationFrame(dragTick);
+}
+function cleanupDrag(){
+ cancelAnimationFrame(drag.raf);
+ removeEventListener("pointermove",onDragMove);removeEventListener("pointerup",endDrag);removeEventListener("pointercancel",cancelDrag);
+ document.body.classList.remove("is-dragging");
+}
+function cancelDrag(){if(!drag)return;cleanupDrag();drag=null;render()}
+function endDrag(e){
+ if(!drag||e.pointerId!==drag.pid)return;
+ const{ph,list,id}=drag,cat=ph.closest(".cat")?.dataset.cat;
+ let next=ph.nextElementSibling;while(next&&!(next.matches(".item[data-id]")&&!next.classList.contains("dragging")))next=next.nextElementSibling;
+ cleanupDrag();drag=null;
+ const arr=list==="master"?db.master:activeTrip()?.items;
+ if(arr&&cat)moveItem(arr,id,cat,next?.dataset.id);
+ save();
+}
+function moveItem(arr,id,cat,beforeId){
+ const i=arr.findIndex(x=>x.id===id);if(i<0)return;
+ const[x]=arr.splice(i,1);x.cat=cat;
+ let j=beforeId?arr.findIndex(y=>y.id===beforeId):-1;
+ if(j<0){let last=-1;arr.forEach((y,k)=>{if(y.cat===cat)last=k});j=last<0?arr.length:last+1}
+ arr.splice(j,0,x);
+}
 
 function toggle(tid,id){const t=db.trips.find(t=>t.id===tid),x=t?.items.find(x=>x.id===id);if(!x)return;x.done=!x.done;save()}
 function removeTripItem(tid,id){const t=db.trips.find(t=>t.id===tid);if(!t)return;t.items=t.items.filter(x=>x.id!==id);save()}
