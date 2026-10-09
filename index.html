@@ -2,119 +2,116 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#10243e"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#10243e">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Paklijst"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Paklijst</title>
 <style>
-:root{--navy:#10243e;--gold:#d9a441;--bg:#f4f6f8;--card:#fff;--text:#18212b;--muted:#697586;--line:#e3e7ec;--green:#238636;--danger:#b42318}
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{background:var(--navy);color:white;padding:17px max(16px,calc((100vw - 1050px)/2));position:sticky;top:0;z-index:10;box-shadow:0 2px 10px #0002}
+:root{--navy:#10243e;--gold:#d9a441;--bg:#f4f6f8;--card:#fff;--text:#18212b;--muted:#697586;--line:#e3e7ec;--green:#238636;--danger:#b42318;--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);padding-bottom:var(--safe-bottom)}
+header{background:var(--navy);color:white;padding:calc(17px + var(--safe-top)) max(16px,calc((100vw - 1050px)/2)) 17px;position:sticky;top:0;z-index:10;box-shadow:0 2px 10px #0002}
 .hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-size:22px;font-weight:800}.sub{font-size:12px;opacity:.7}
-nav{max-width:1050px;margin:10px auto 0;display:flex;gap:6px;overflow:auto}nav button{white-space:nowrap;border:0;background:#ffffff18;color:#fff;border-radius:9px;padding:8px 12px;font-weight:650;cursor:pointer}nav button.active{background:var(--gold);color:#17202b}
+nav.top{max-width:1050px;margin:10px auto 0;display:flex;gap:6px;overflow:auto}nav.top button{white-space:nowrap;border:0;background:#ffffff18;color:#fff;border-radius:9px;padding:8px 12px;font-weight:650;cursor:pointer}nav.top button.active{background:var(--gold);color:#17202b}
 main{max-width:1050px;margin:auto;padding:16px 16px 90px}.page{display:none}.page.active{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px #00000008}
 .grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:15px;background:white}
-.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:650;cursor:pointer}.primary{background:var(--navy);color:white;border-color:var(--navy)}.gold{background:var(--gold);border-color:var(--gold)}.danger{color:var(--danger)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-weight:650;cursor:pointer;color:var(--text)}.primary{background:var(--navy);color:white;border-color:var(--navy)}.gold{background:var(--gold);border-color:var(--gold);color:#17202b}.danger{color:var(--danger)}
 .progress{margin-top:14px}.ptop{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}.bar{height:8px;background:#e8ebef;border-radius:8px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{padding:13px;background:#f7f8fa;border-radius:12px}.stat b{font-size:22px}.stat small{display:block;color:var(--muted)}
 .tripcard{cursor:pointer}.tripcard:hover{border-color:#c5ccd5}.triptop{display:flex;justify-content:space-between;gap:10px}.tripname{font-size:17px;font-weight:750}.meta{font-size:12px;color:var(--muted);margin-top:4px}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar input{flex:1;min-width:180px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}.toolbar input{flex:1;min-width:180px;padding:11px;border:1px solid var(--line);border-radius:10px}
 .cat{margin-bottom:17px}.cathead{display:flex;justify-content:space-between;align-items:center;margin:5px 2px 7px}.cathead h2{font-size:16px;margin:0}.count{font-size:12px;color:var(--muted)}
-.item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);padding:10px 11px;border-radius:11px;margin-bottom:6px}.item.done{opacity:.5}.item.done .name{text-decoration:line-through}.check{width:21px;height:21px;accent-color:var(--green)}.name{flex:1;font-size:14px}.tag{font-size:11px;color:var(--muted);white-space:nowrap}.icons{display:flex;gap:3px}.icon{border:0;background:transparent;color:var(--muted);padding:4px;cursor:pointer}
-.modalback{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal{background:white;border-radius:18px;padding:20px;width:min(560px,100%);max-height:90vh;overflow:auto}.modal h2{margin-top:0}.modal .field{margin-bottom:12px}.modalfoot{display:flex;justify-content:flex-end;gap:8px}
-.checkgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.checkopt{border:1px solid var(--line);padding:9px;border-radius:10px}.checkopt input{margin-right:7px}
+.item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);padding:10px 11px;border-radius:11px;margin-bottom:6px}.item.done{opacity:.5}.item.done .name{text-decoration:line-through}.check{width:21px;height:21px;min-height:21px;accent-color:var(--green)}.name{flex:1;font-size:14px}.tag{font-size:11px;color:var(--muted);text-align:right}.icons{display:flex;gap:3px}.icon{border:0;background:transparent;color:var(--muted);padding:4px 8px;cursor:pointer;font-size:15px}
+.modalback{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center;padding:16px;z-index:1000}.modal{background:white;border-radius:18px;padding:20px;width:min(560px,100%);max-height:90vh;overflow:auto}.modal h2{margin-top:0}.modal .field{margin-bottom:12px}.modalfoot{display:flex;justify-content:flex-end;gap:8px}
+.checkgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.checkopt{border:1px solid var(--line);padding:9px;border-radius:10px;display:flex;align-items:center}.checkopt input{margin-right:7px;min-height:0}
 .empty{text-align:center;padding:35px;color:var(--muted)}
-@media(max-width:650px){.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.stats{grid-template-columns:repeat(2,1fr)}.checkgrid{grid-template-columns:1fr}}
-@media print{header,.toolbar,.actions,.icons,.trip-edit,.modalback{display:none!important}body{background:white}.card{border:0;box-shadow:none}}
-</style>
-<style id="v3-mobile">
-:root{--safe-top:env(safe-area-inset-top);--safe-bottom:env(safe-area-inset-bottom)}
-html{-webkit-text-size-adjust:100%}
-body{padding-top:max(0px,var(--safe-top));padding-bottom:max(0px,var(--safe-bottom))}
-button,input,select,textarea{min-height:44px}
-input,select,textarea{font-size:16px!important}
-button{touch-action:manipulation}
+.transfer{background:linear-gradient(180deg,#fff,#f8fafc)}.transfer h3{margin:0 0 6px;font-size:18px}
+.hint{font-size:13px;color:var(--muted);line-height:1.45}
+button,input,select{min-height:44px}input,select{font-size:16px!important}button{touch-action:manipulation}
+.bottom-nav{display:none}
 @media(max-width:700px){
  body{padding-bottom:calc(72px + var(--safe-bottom))}
- .v3-bottom-nav{position:fixed;z-index:999;left:0;right:0;bottom:0;padding:8px 10px calc(8px + var(--safe-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid #ddd;display:flex;gap:8px}
- .v3-bottom-nav button{flex:1;min-height:48px;border-radius:14px}
+ .bottom-nav{position:fixed;z-index:20;left:0;right:0;bottom:0;padding:8px 10px calc(8px + var(--safe-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid #ddd;display:flex;gap:8px}
+ .bottom-nav button{flex:1;min-height:48px;border-radius:14px}
+ .transfer .actions{display:grid;grid-template-columns:1fr}
 }
-@media(min-width:701px){.v3-bottom-nav{display:none}}
-.v3-export-panel{margin:20px 0;padding:16px;border:1px solid #ddd;border-radius:16px;background:rgba(127,127,127,.05)}
-.v3-export-panel h3{margin:0 0 8px}
-.v3-export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
-.v3-export-grid button{width:100%}
-.v3-small{font-size:.9rem;opacity:.75}
-</style>
-
-<style id="v31-style">
-.v31-transfer{background:linear-gradient(180deg,#fff,#f8fafc)}
-.v31-transfer h3{font-size:18px}
-@media(max-width:700px){
- .v31-transfer .actions{display:grid;grid-template-columns:1fr}
- .v31-transfer .actions button{width:100%}
-}
+@media(max-width:650px){.grid{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.checkgrid{grid-template-columns:1fr}}
+@media print{header,.toolbar,.actions,.icons,.modalback,.bottom-nav,.noprint{display:none!important}body{background:white;padding:0}.card{border:0;box-shadow:none}}
 </style>
 </head>
 <body>
-<header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim</div></div><button class="btn gold" onclick="openItem()">＋ Item</button></div>
-<nav><button id="navTrips" onclick="page('trips')">Mijn reizen</button><button id="navPack" onclick="page('pack')">Paklijst</button><button id="navMaster" onclick="page('master')">Masterlijst</button></nav></header>
+<header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim</div></div><button class="btn gold" onclick="headerAdd()">＋ Item</button></div>
+<nav class="top"><button id="navTrips" onclick="page('trips')">Mijn reizen</button><button id="navPack" onclick="page('pack')">Paklijst</button><button id="navMaster" onclick="page('master')">Masterlijst</button></nav></header>
 
 <main>
 <section id="trips" class="page">
-<div class="card"><div class="hrow"><div><h2 style="margin:0">Mijn reizen</h2><div class="meta">Elke reis heeft zijn eigen checklist.</div></div><button class="btn primary" onclick="newTrip()">＋ Nieuwe reis</button></div></div>
-
-<div class="card v31-transfer">
-  <h3 style="margin:0 0 6px">📱 Op een ander apparaat gebruiken</h3>
-  <div class="meta" style="font-size:14px;line-height:1.45">
-    De app synchroniseert bewust niet via een account. Gebruik een JSON-backup om je
-    masterlijst en reizen van je computer naar je iPhone/iPad over te zetten.
-  </div>
+ <div class="card"><div class="hrow"><div><h2 style="margin:0">Mijn reizen</h2><div class="meta">Elke reis heeft zijn eigen checklist.</div></div><button class="btn primary" onclick="newTrip()">＋ Nieuwe reis</button></div></div>
+ <div id="tripList"></div>
+ <div class="card transfer" id="backupCard">
+  <h3>💾 Backup & ander apparaat</h3>
+  <div class="hint">De app synchroniseert bewust niet via een account; alles staat lokaal op dit apparaat. Deel een backup om je masterlijst en reizen naar je iPhone/iPad over te zetten, of om ze veilig te bewaren.</div>
   <div class="actions" style="margin-top:10px">
-    <button class="btn primary" type="button" onclick="document.getElementById('v31ImportFile').click()">⬇️ Backup importeren</button>
-    <button class="btn" type="button" onclick="v31ShareBackup()">📤 Backup delen</button>
+   <button class="btn primary" type="button" onclick="document.getElementById('importFile').click()">⬇️ Backup importeren</button>
+   <button class="btn" type="button" onclick="shareBackup()">📤 Backup delen / opslaan</button>
   </div>
-  <input id="v31ImportFile" type="file" accept=".json,application/json" hidden>
-</div>
-<div id="tripList"></div>
+  <input id="importFile" type="file" accept=".json,application/json" hidden>
+ </div>
 </section>
 
 <section id="pack" class="page">
-<div class="card">
- <div class="grid"><div class="field wide"><label>Reis</label><input id="tripName"></div><div class="field"><label>Vertrek</label><input id="tripDate" type="date"></div><div class="field"><label>Dagen</label><input id="days" type="number" min="1"></div></div>
- <div class="field" style="margin-top:10px"><label>Profiel</label><select id="profile"><option value="">Kies een profiel…</option><option value="city">🏙️ Citytrip</option><option value="beach">🏖️ Strand / warm</option><option value="cold">❄️ Koud weer</option><option value="business">💼 Zakenreis</option><option value="road">🚗 Roadtrip</option><option value="hiking">🥾 Outdoor / wandelen</option></select></div>
- <div class="progress"><div class="ptop"><span id="progressText"></span><span id="pct"></span></div><div class="bar"><i id="bar"></i></div></div>
-</div>
-<div class="card"><div class="toolbar"><input id="search" placeholder="🔎 Zoek…"><select class="btn" id="filter"><option value="all">Alles</option><option value="open">Nog doen</option><option value="done">Ingepakt</option></select><button class="btn" onclick="applySmart()">✨ Slim aanvullen</button><button class="btn" onclick="window.print()">🖨 Print</button><button class="btn" onclick="resetChecks()">↺ Reset</button></div></div>
-<div id="packList"></div>
+ <div class="card">
+  <div class="grid"><div class="field wide"><label>Reis</label><input id="tripName"></div><div class="field"><label>Vertrek</label><input id="tripDate" type="date"></div><div class="field"><label>Dagen</label><input id="days" type="number" min="1" inputmode="numeric"></div></div>
+  <div class="field" style="margin-top:10px"><label>Profiel</label><select id="profile"><option value="">Kies een profiel…</option></select></div>
+  <div class="progress"><div class="ptop"><span id="progressText"></span><span id="pct"></span></div><div class="bar"><i id="bar"></i></div></div>
+ </div>
+ <div class="card"><div class="toolbar"><input id="search" placeholder="🔎 Zoek…"><select class="btn" id="filter"><option value="all">Alles</option><option value="open">Nog doen</option><option value="done">Ingepakt</option></select><button class="btn" onclick="applySmart()">✨ Slim aanvullen</button><button class="btn" onclick="shareTripText()">📤 Delen</button><button class="btn" onclick="exportTripCsv()">CSV</button><button class="btn" onclick="window.print()">🖨 Print</button><button class="btn" onclick="resetChecks()">↺ Reset</button></div></div>
+ <div id="packList"></div>
+ <div class="actions noprint" style="justify-content:center;margin-top:20px"><button class="btn danger" onclick="deleteTrip()">🗑 Deze reis verwijderen</button></div>
 </section>
 
 <section id="master" class="page">
-<div class="card"><div class="hrow"><div><h2 style="margin:0">Masterlijst</h2><div class="meta">Jouw persoonlijke bibliotheek. Nieuwe reizen kunnen hieruit worden samengesteld.</div></div><button class="btn primary" onclick="openItem(null,true)">＋ Item</button></div></div>
-<div class="card"><div class="toolbar"><input id="masterSearch" placeholder="🔎 Zoek in masterlijst…"><select class="btn" id="masterCat"></select></div></div>
-<div id="masterList"></div>
+ <div class="card"><div class="hrow"><div><h2 style="margin:0">Masterlijst</h2><div class="meta">Items met ⭐ komen in elke nieuwe reis. Items zonder ster worden toegevoegd via ✨ Slim aanvullen als ze bij het profiel van de reis horen. Tik op de ster om te wisselen.</div></div><button class="btn primary" onclick="openItem(null,true)">＋ Item</button></div></div>
+ <div class="card"><div class="toolbar"><input id="masterSearch" placeholder="🔎 Zoek in masterlijst…"><select class="btn" id="masterCat"></select></div></div>
+ <div id="masterList"></div>
 </section>
 </main>
 
+<nav class="bottom-nav" aria-label="Snelle acties">
+ <button type="button" class="btn" onclick="scrollTo({top:0,behavior:'smooth'})">⬆️ Boven</button>
+ <button type="button" class="btn" onclick="goBackup()">💾 Backup</button>
+ <button type="button" class="btn" onclick="newTrip()">➕ Nieuwe reis</button>
+</nav>
+
 <div class="modalback" id="modalback"><div class="modal">
-<h2 id="modalTitle">Item</h2>
-<div class="field"><label>Naam</label><input id="iname"></div>
-<div class="field"><label>Categorie</label><select id="icat"></select></div>
-<div class="field"><label>Hoeveelheid / opmerking</label><input id="iqty" placeholder="Bijv. 5x"></div>
-<div class="field"><label>Profielen</label><div class="checkgrid" id="profiles"></div></div>
-<div class="modalfoot"><button class="btn" onclick="closeModal()">Annuleren</button><button class="btn primary" onclick="saveItem()">Opslaan</button></div>
+ <h2 id="modalTitle">Item</h2>
+ <div class="field"><label>Naam</label><input id="iname"></div>
+ <div class="field"><label>Categorie</label><select id="icat"></select></div>
+ <div class="field"><label>Hoeveelheid / opmerking</label><input id="iqty" placeholder="Bijv. 5x"></div>
+ <div id="masterFields">
+  <div class="field"><label class="checkopt" style="color:var(--text);font-size:15px"><input type="checkbox" id="ialways">⭐ Altijd meenemen (in elke nieuwe reis)</label></div>
+  <div class="field"><label>Hoort bij profielen (voor ✨ Slim aanvullen)</label><div class="checkgrid" id="profiles"></div></div>
+ </div>
+ <div class="modalfoot"><button class="btn" onclick="closeModal()">Annuleren</button><button class="btn primary" onclick="saveItem()">Opslaan</button></div>
 </div></div>
 
 <script>
+const KEY="paklijst-v2", VERSION="3.2";
 const CATS=["Voor vertrek","Dag van vertrek","Vliegen","Toilettas","Apparatuur","Kleding","Schoenen","Overig"];
-const PROFILE_NAMES={city:"Citytrip",beach:"Strand / warm",cold:"Koud weer",business:"Zakenreis",road:"Roadtrip",hiking:"Outdoor / wandelen"};
-const RULES={
- city:["Vliegen","Apparatuur","Kleding","Schoenen","Toilettas"],
- beach:["Zonnebrand","Zwembroek","Slippers","Muggenspul","Deet","Drybag / waterdichte zak"],
- cold:["Muts","Sjaal","Truien","Lange broeken","Regenjas","Poncho"],
- business:["Laptop / muis / lader","Nette schoenen","Overhemd","Polo’s","Vliegen"],
+const PROFILE_NAMES={city:"🏙️ Citytrip",beach:"🏖️ Strand / warm",cold:"❄️ Koud weer",business:"💼 Zakenreis",road:"🚗 Roadtrip",hiking:"🥾 Outdoor / wandelen"};
+// Standaard profielkoppelingen (op itemnaam). Aanpasbaar per item in de masterlijst.
+const PROFILE_TAGS={
+ beach:["Zonnebrand","Zwembroek","Slippers","Muggenspul","Deet","Drybag / waterdichte zak","Korte broeken","Petje","Zonnebril"],
+ cold:["Muts","Sjaal","Truien","Lange broeken","Regenjas","Poncho","Jas","Extra paar warme sokken"],
+ business:["Laptop / muis / lader","Nette schoenen","Overhemd","Polo’s"],
  road:["Rugzak mee voor dagtochten","Powerbank(s)","Zonnebril","Drybag / waterdichte zak"],
- hiking:["Rugzak mee voor dagtochten","Drybag / waterdichte zak","Regenjas","Poncho","Zonnebrand","Deet"]
+ hiking:["Rugzak mee voor dagtochten","Drybag / waterdichte zak","Regenjas","Poncho","Zonnebrand","Deet","Pleisters (ook blarenpleisters)"]
 };
-const seed=[
+// Bij een nieuwe installatie staan deze items niet standaard op "altijd", maar komen ze via het profiel.
+const SITUATIONAL=["Zonnebrand","Zwembroek","Slippers","Muggenspul","Deet","Drybag / waterdichte zak","Muts","Sjaal","Poncho","Nette schoenen","Overhemd","Laptop / muis / lader","Rugzak mee voor dagtochten"];
+const tagsFor=name=>Object.keys(PROFILE_TAGS).filter(p=>PROFILE_TAGS[p].includes(name));
+const SEED=[
 ["Voor vertrek","Out of Office aanzetten"],["Voor vertrek","Buddy in Auto-reply regelen"],["Voor vertrek","Thermostaat programmeren"],["Voor vertrek","Batterijen beveiligingscamera’s checken"],["Voor vertrek","Paspoorten nog lang genoeg geldig check"],["Voor vertrek","Pinpassen op werelddekking"],["Voor vertrek","Zorgverzekeringspasje"],["Voor vertrek","Vaccinatieboekje"],["Voor vertrek","Downloaden Netflix, Spotify, Google Maps"],["Voor vertrek","Lokale apps van bestemming downloaden (taxi, trein, vertalen)"],["Voor vertrek","Visa"],["Voor vertrek","Cash lokaal geld"],["Voor vertrek","Buren vragen gras te maaien en sproeien"],["Voor vertrek","E-sim regelen"],["Voor vertrek","Stoelreservering"],["Voor vertrek","Taxi naar vliegveld of auto parking reserveren"],
 ["Dag van vertrek","Verwarming uit"],["Dag van vertrek","AirTags in koffers"],["Dag van vertrek","Hoofdschakelaar autolader uit"],["Dag van vertrek","Lampen op timers binnen"],["Dag van vertrek","Slotje op schuurdeur zetten"],
 ["Vliegen","Paspoorten"],["Vliegen","Kopie reisverzekering digitaal mee"],["Vliegen","Kopie paspoort digitaal mee"],["Vliegen","Kussen voor in je nek"],["Vliegen","Extra paar warme sokken"],["Vliegen","Houder voor iPhone in vliegtuigstoel"],["Vliegen","iPhone lader (zowel USB als USB-C)"],["Vliegen","Vouchers e.d. geprint mee"],["Vliegen","Powerbank"],["Vliegen","Pen voor formulieren"],["Vliegen","Flesje water & snacks"],["Vliegen","Oordopjes"],
@@ -123,185 +120,168 @@ const seed=[
 ["Kleding","Boxershorts"],["Kleding","Sokken"],["Kleding","Korte broeken"],["Kleding","T-shirts"],["Kleding","T-shirt om in te slapen"],["Kleding","Lange broeken"],["Kleding","Truien"],["Kleding","Vest"],["Kleding","Overhemd"],["Kleding","Polo’s"],["Kleding","Zwembroek"],["Kleding","Sjaal"],["Kleding","Petje"],["Kleding","Muts"],["Kleding","Jas"],["Kleding","Regenjas"],["Kleding","Poncho"],
 ["Schoenen","Sneakers"],["Schoenen","Slippers"],["Schoenen","Instappers"],["Schoenen","Nette schoenen"],
 ["Overig","Katoenen beddengoed voor allergie Heleen"],["Overig","Plastic tasje voor vloeistoffen op vliegveld"],["Overig","Plastic tas voor de was"],["Overig","Rugzak mee voor dagtochten"],["Overig","Spelletjes"],["Overig","Drybag / waterdichte zak"]
-].map(([cat,name],i)=>({id:"m"+i,cat,name,qty:"",profiles:[],always:true}));
+].map(([cat,name],i)=>({id:"m"+i,cat,name,qty:"",profiles:tagsFor(name),always:!SITUATIONAL.includes(name)}));
 
-let db=JSON.parse(localStorage.getItem("paklijst-v2")||"null");
-if(!db){db={master:seed,trips:[],active:null};}
-let editId=null, editMaster=false;
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+let db=null;
+try{db=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){db=null}
+if(!db||!Array.isArray(db.master)){
+ // Nieuwe installatie: masterlijst + eerste reis aanmaken.
+ db={master:SEED,trips:[],active:null};
+ const t={id:uid("t"),name:"Mijn eerste reis",date:"",days:"",profile:"",items:[]};
+ buildFromMaster(t);db.trips.push(t);db.active=t.id;
+}
+// Migratie van oudere versies: velden aanvullen, nooit gegevens weggooien.
+db.trips=Array.isArray(db.trips)?db.trips:[];
+db.master.forEach(x=>{
+ if(typeof x.always!=="boolean")x.always=true;
+ if(!Array.isArray(x.profiles))x.profiles=[];
+ if(!x.profiles.length&&!db.tagsMigrated)x.profiles=tagsFor(x.name);
+});
+db.tagsMigrated=true;
+db.trips.forEach(t=>{if(!Array.isArray(t.items))t.items=[]});
+if(!db.trips.some(t=>t.id===db.active))db.active=db.trips[0]?.id||null;
+persist();
 
-function save(){localStorage.setItem("paklijst-v2",JSON.stringify(db));render()}
+let editId=null, editMaster=false, currentPage="trips";
+
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){alert("Opslaan mislukt: "+e.message)}}
+function save(){persist();render()}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function page(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(p).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.getElementById("nav"+p[0].toUpperCase()+p.slice(1)).classList.add("active");render()}
+function fmtDate(d){if(!d)return "Geen datum";const x=new Date(d+"T12:00");return isNaN(x)?d:x.toLocaleDateString("nl-NL",{day:"numeric",month:"short",year:"numeric"})}
 function activeTrip(){return db.trips.find(t=>t.id===db.active)}
-function newTrip(){let t={id:"t"+Date.now(),name:"Nieuwe reis",date:"",days:"",profile:"",items:[]};db.trips.unshift(t);db.active=t.id;buildFromMaster(t);save();page("pack")}
-function buildFromMaster(t){t.items=db.master.filter(x=>x.always).map(x=>({id:"i"+Date.now()+Math.random(),masterId:x.id,name:x.name,cat:x.cat,qty:x.qty||"",done:false}))}
+function page(p){
+ if(p==="pack"&&!activeTrip())p="trips";
+ currentPage=p;
+ document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===p));
+ document.querySelectorAll("nav.top button").forEach(x=>x.classList.toggle("active",x.id==="nav"+p[0].toUpperCase()+p.slice(1)));
+ render();scrollTo({top:0});
+}
+function newTrip(){const t={id:uid("t"),name:"Nieuwe reis",date:"",days:"",profile:"",items:[]};buildFromMaster(t);db.trips.unshift(t);db.active=t.id;save();page("pack");setTimeout(()=>{const n=document.getElementById("tripName");n.focus();n.select()},50)}
+function buildFromMaster(t){t.items=db.master.filter(x=>x.always).map(x=>({id:uid("i"),masterId:x.id,name:x.name,cat:x.cat,qty:x.qty||"",done:false}))}
+function deleteTrip(){const t=activeTrip();if(!t)return;if(!confirm(`Reis "${t.name||"Naamloze reis"}" definitief verwijderen?`))return;db.trips=db.trips.filter(x=>x.id!==t.id);db.active=db.trips[0]?.id||null;save();page("trips")}
+function openTrip(id){db.active=id;persist();page("pack")}
+function headerAdd(){if(currentPage==="master"||!activeTrip())openItem(null,true);else openItem(null,false)}
+function goBackup(){page("trips");setTimeout(()=>document.getElementById("backupCard").scrollIntoView({behavior:"smooth"}),50)}
+
 function render(){renderTrips();renderPack();renderMaster()}
-function renderTrips(){let el=document.getElementById("tripList");el.innerHTML=db.trips.map(t=>{let d=t.items.filter(x=>x.done).length,total=t.items.length,p=total?Math.round(d/total*100):0;return `<div class="card tripcard" onclick="openTrip('${t.id}')"><div class="triptop"><div><div class="tripname">${esc(t.name||"Naamloze reis")}</div><div class="meta">${t.date||"Geen datum"} · ${t.days?t.days+" dagen":"duur onbekend"} · ${PROFILE_NAMES[t.profile]||"geen profiel"}</div></div><b>${p}%</b></div><div class="bar"><i style="width:${p}%"></i></div><div class="meta" style="margin-top:8px">${d}/${total} items ingepakt</div></div>`}).join("")||`<div class="card empty">Nog geen reizen. Maak je eerste reis aan.</div>`}
-function renderPack(){let t=activeTrip();if(!t)return;document.getElementById("tripName").value=t.name;document.getElementById("tripDate").value=t.date;document.getElementById("days").value=t.days;document.getElementById("profile").value=t.profile;let q=document.getElementById("search").value.toLowerCase(),f=document.getElementById("filter").value,items=t.items.filter(x=>(!q||x.name.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q))&&(f==="all"||(f==="done"&&x.done)||(f==="open"&&!x.done)));let total=t.items.length,d=t.items.filter(x=>x.done).length,p=total?Math.round(d/total*100):0;document.getElementById("progressText").textContent=`${d} van ${total} ingepakt`;document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";
-document.getElementById("packList").innerHTML=CATS.map(cat=>{let a=items.filter(x=>x.cat===cat),all=t.items.filter(x=>x.cat===cat);if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${cat}</h2><span class="count">${all.filter(x=>x.done).length}/${all.length}</span></div>`+a.map(x=>itemHTML(x,t.id)).join("")+"</section>`}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
-function itemHTML(x,tid){return `<div class="item ${x.done?"done":""}"><input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggle('${tid}','${x.id}')"><span class="name">${esc(x.name)}</span><span class="tag">${esc(x.qty||"")}</span><span class="icons"><button class="icon" onclick="editTripItem('${tid}','${x.id}')">✎</button><button class="icon" onclick="removeTripItem('${tid}','${x.id}')">×</button></span></div>`}
-function renderMaster(){let q=document.getElementById("masterSearch").value.toLowerCase(),cat=document.getElementById("masterCat").value;document.getElementById("masterList").innerHTML=CATS.map(c=>{let a=db.master.filter(x=>x.cat===c&&(!q||x.name.toLowerCase().includes(q))&&(!cat||c===cat));if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${c}</h2><span class="count">${a.length}</span></div>`+a.map(x=>`<div class="item"><span class="name">${esc(x.name)}</span><span class="tag">${x.always?"⭐ altijd":""}</span><span class="icons"><button class="icon" onclick="openItem('${x.id}',true)">✎</button><button class="icon" onclick="removeMaster('${x.id}')">×</button></span></div>`).join("")+"</section>`}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
-function openTrip(id){db.active=id;save();page("pack")}
-function toggle(tid,id){let t=db.trips.find(t=>t.id===tid),x=t.items.find(x=>x.id===id);x.done=!x.done;save()}
-function removeTripItem(tid,id){let t=db.trips.find(t=>t.id===tid);t.items=t.items.filter(x=>x.id!==id);save()}
-function resetChecks(){let t=activeTrip();t.items.forEach(x=>x.done=false);save()}
-function applySmart(){let t=activeTrip();let p=t.profile;if(!p){alert("Kies eerst een reisprofiel.");return}let names=RULES[p]||[];let masterHits=db.master.filter(x=>names.includes(x.name)||names.includes(x.cat));let existing=new Set(t.items.map(x=>x.masterId));masterHits.forEach(x=>{if(!existing.has(x.id))t.items.push({id:"i"+Date.now()+Math.random(),masterId:x.id,name:x.name,cat:x.cat,qty:x.qty||"",done:false})});save();alert(`${masterHits.filter(x=>!existing.has(x.id)).length} passende items toegevoegd.`)}
-function openItem(id=null,master=false){editId=id;editMaster=master;document.getElementById("modalTitle").textContent=id?"Item bewerken":"Item toevoegen";document.getElementById("icat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");document.getElementById("profiles").innerHTML=Object.entries(PROFILE_NAMES).map(([k,v])=>`<label class="checkopt"><input type="checkbox" value="${k}">${v}</label>`).join("");let x=id?db.master.find(x=>x.id===id):null;document.getElementById("iname").value=x?.name||"";document.getElementById("icat").value=x?.cat||"Overig";document.getElementById("iqty").value=x?.qty||"";document.querySelectorAll("#profiles input").forEach(c=>c.checked=x?.profiles?.includes(c.value));document.getElementById("modalback").style.display="flex";setTimeout(()=>document.getElementById("iname").focus(),30)}
-function editTripItem(tid,id){let t=db.trips.find(t=>t.id===tid),x=t.items.find(x=>x.id===id);editId=id;editMaster=false;document.getElementById("modalTitle").textContent="Item bewerken";document.getElementById("icat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");document.getElementById("profiles").innerHTML="";document.getElementById("iname").value=x.name;document.getElementById("icat").value=x.cat;document.getElementById("iqty").value=x.qty||"";document.getElementById("modalback").style.display="flex"}
-function saveItem(){let name=document.getElementById("iname").value.trim();if(!name)return;let cat=document.getElementById("icat").value,qty=document.getElementById("iqty").value.trim(),profiles=[...document.querySelectorAll("#profiles input:checked")].map(x=>x.value);if(editMaster){let x=editId&&db.master.find(x=>x.id===editId);if(x)Object.assign(x,{name,cat,qty,profiles});else db.master.push({id:"m"+Date.now(),name,cat,qty,profiles,always:true})}else{let t=activeTrip(),x=editId&&t.items.find(x=>x.id===editId);if(x)Object.assign(x,{name,cat,qty});else t.items.push({id:"i"+Date.now(),name,cat,qty,done:false})}closeModal();save()}
+function renderTrips(){const el=document.getElementById("tripList");el.innerHTML=db.trips.map(t=>{const d=t.items.filter(x=>x.done).length,total=t.items.length,p=total?Math.round(d/total*100):0;return `<div class="card tripcard" onclick="openTrip('${t.id}')"><div class="triptop"><div><div class="tripname">${esc(t.name||"Naamloze reis")}</div><div class="meta">${fmtDate(t.date)} · ${t.days?esc(t.days)+" dagen":"duur onbekend"} · ${PROFILE_NAMES[t.profile]||"geen profiel"}</div></div><b>${p}%</b></div><div class="bar"><i style="width:${p}%"></i></div><div class="meta" style="margin-top:8px">${d}/${total} items ingepakt</div></div>`}).join("")||`<div class="card empty">Nog geen reizen. Maak je eerste reis aan met ＋ Nieuwe reis.</div>`}
+function renderPack(){const t=activeTrip();if(!t)return;
+ const set=(id,v)=>{const e=document.getElementById(id);if(document.activeElement!==e)e.value=v??""};
+ set("tripName",t.name);set("tripDate",t.date);set("days",t.days);set("profile",t.profile);
+ const q=document.getElementById("search").value.toLowerCase(),f=document.getElementById("filter").value;
+ const items=t.items.filter(x=>(!q||x.name.toLowerCase().includes(q)||x.cat.toLowerCase().includes(q))&&(f==="all"||(f==="done"&&x.done)||(f==="open"&&!x.done)));
+ const total=t.items.length,d=t.items.filter(x=>x.done).length,p=total?Math.round(d/total*100):0;
+ document.getElementById("progressText").textContent=`${d} van ${total} ingepakt`;document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";
+ document.getElementById("packList").innerHTML=CATS.map(cat=>{const a=items.filter(x=>x.cat===cat),all=t.items.filter(x=>x.cat===cat);if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${cat}</h2><span class="count">${all.filter(x=>x.done).length}/${all.length}</span></div>`+a.map(x=>itemHTML(x,t.id)).join("")+"</section>"}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
+function itemHTML(x,tid){return `<div class="item ${x.done?"done":""}"><input class="check" type="checkbox" ${x.done?"checked":""} onchange="toggle('${tid}','${x.id}')"><span class="name">${esc(x.name)}</span><span class="tag">${esc(x.qty||"")}</span><span class="icons"><button class="icon" title="Bewerken" onclick="openItem('${x.id}',false)">✎</button><button class="icon" title="Verwijderen" onclick="removeTripItem('${tid}','${x.id}')">×</button></span></div>`}
+function renderMaster(){const q=document.getElementById("masterSearch").value.toLowerCase(),cat=document.getElementById("masterCat").value;
+ document.getElementById("masterList").innerHTML=CATS.map(c=>{const a=db.master.filter(x=>x.cat===c&&(!q||x.name.toLowerCase().includes(q))&&(!cat||c===cat));if(!a.length)return "";return `<section class="cat"><div class="cathead"><h2>${c}</h2><span class="count">${a.length}</span></div>`+a.map(x=>`<div class="item"><button class="icon" title="${x.always?"Altijd meenemen — tik om uit te zetten":"Alleen via profiel — tik om altijd mee te nemen"}" onclick="toggleAlways('${x.id}')">${x.always?"⭐":"☆"}</button><span class="name">${esc(x.name)}${x.qty?` <span class="tag">· ${esc(x.qty)}</span>`:""}</span><span class="tag">${x.profiles.map(p=>PROFILE_NAMES[p]?.split(" ")[0]||"").join(" ")}</span><span class="icons"><button class="icon" title="Bewerken" onclick="openItem('${x.id}',true)">✎</button><button class="icon" title="Verwijderen" onclick="removeMaster('${x.id}')">×</button></span></div>`).join("")+"</section>"}).join("")||`<div class="card empty">Geen items gevonden.</div>`}
+
+function toggle(tid,id){const t=db.trips.find(t=>t.id===tid),x=t?.items.find(x=>x.id===id);if(!x)return;x.done=!x.done;save()}
+function removeTripItem(tid,id){const t=db.trips.find(t=>t.id===tid);if(!t)return;t.items=t.items.filter(x=>x.id!==id);save()}
+function resetChecks(){const t=activeTrip();if(!t)return;if(!confirm("Alle vinkjes van deze reis weghalen?"))return;t.items.forEach(x=>x.done=false);save()}
+function toggleAlways(id){const x=db.master.find(x=>x.id===id);if(!x)return;x.always=!x.always;save()}
+function applySmart(){
+ const t=activeTrip();if(!t)return;const p=t.profile;
+ if(!p){alert("Kies eerst een reisprofiel.");return}
+ const hits=db.master.filter(x=>x.profiles.includes(p));
+ if(!hits.length){alert(`Er zijn nog geen items gekoppeld aan ${PROFILE_NAMES[p]}. Koppel items via ✎ in de masterlijst.`);return}
+ const haveId=new Set(t.items.map(x=>x.masterId).filter(Boolean)),haveName=new Set(t.items.map(x=>x.name.trim().toLowerCase()));
+ const add=hits.filter(x=>!haveId.has(x.id)&&!haveName.has(x.name.trim().toLowerCase()));
+ add.forEach(x=>t.items.push({id:uid("i"),masterId:x.id,name:x.name,cat:x.cat,qty:x.qty||"",done:false}));
+ save();
+ alert(add.length?`${add.length} item${add.length===1?"":"s"} toegevoegd voor ${PROFILE_NAMES[p]}:\n\n• ${add.map(x=>x.name).join("\n• ")}`:`Alles voor ${PROFILE_NAMES[p]} staat al op je lijst.`);
+}
+
+function openItem(id=null,master=false){
+ editId=id;editMaster=master;
+ const t=activeTrip(),x=id?(master?db.master.find(x=>x.id===id):t?.items.find(x=>x.id===id)):null;
+ if(id&&!x)return;
+ document.getElementById("modalTitle").textContent=(id?"Item bewerken":"Item toevoegen")+(master?" · masterlijst":" · deze reis");
+ document.getElementById("iname").value=x?.name||"";
+ document.getElementById("icat").value=x?.cat||"Overig";
+ document.getElementById("iqty").value=x?.qty||"";
+ document.getElementById("masterFields").style.display=master?"":"none";
+ document.getElementById("ialways").checked=x?x.always:true;
+ document.querySelectorAll("#profiles input").forEach(c=>c.checked=!!x?.profiles?.includes(c.value));
+ document.getElementById("modalback").style.display="flex";
+ if(!id)setTimeout(()=>document.getElementById("iname").focus(),30);
+}
+function saveItem(){
+ const name=document.getElementById("iname").value.trim();if(!name){document.getElementById("iname").focus();return}
+ const cat=document.getElementById("icat").value,qty=document.getElementById("iqty").value.trim();
+ if(editMaster){
+  const always=document.getElementById("ialways").checked,profiles=[...document.querySelectorAll("#profiles input:checked")].map(x=>x.value);
+  const x=editId&&db.master.find(x=>x.id===editId);
+  if(x)Object.assign(x,{name,cat,qty,always,profiles});else db.master.push({id:uid("m"),name,cat,qty,profiles,always});
+ }else{
+  const t=activeTrip();if(!t)return closeModal();
+  const x=editId&&t.items.find(x=>x.id===editId);
+  if(x)Object.assign(x,{name,cat,qty});else t.items.push({id:uid("i"),name,cat,qty,done:false});
+ }
+ closeModal();save();
+}
 function closeModal(){document.getElementById("modalback").style.display="none"}
-function removeMaster(id){let x=db.master.find(x=>x.id===id);if(confirm(`"${x.name}" verwijderen uit de masterlijst?`)){db.master=db.master.filter(x=>x.id!==id);save()}}
-["tripName","tripDate","days","profile"].forEach(id=>document.getElementById(id).onchange=e=>{let t=activeTrip();t[{tripName:"name",tripDate:"date",days:"days",profile:"profile"}[id]]=e.target.value;save()});
-document.getElementById("search").oninput=render;document.getElementById("filter").onchange=render;document.getElementById("masterSearch").oninput=render;
-document.getElementById("masterCat").innerHTML=`<option value="">Alle categorieën</option>`+CATS.map(c=>`<option>${c}</option>`).join("");document.getElementById("masterCat").onchange=render;
+function removeMaster(id){const x=db.master.find(x=>x.id===id);if(x&&confirm(`"${x.name}" verwijderen uit de masterlijst?\n(Bestaande reizen blijven ongewijzigd.)`)){db.master=db.master.filter(x=>x.id!==id);save()}}
+
+/* ---------- Export & backup ---------- */
+const fileSafe=s=>String(s||"paklijst").normalize("NFKD").replace(/[^\w-]+/g,"-").replace(/^-+|-+$/g,"").toLowerCase()||"paklijst";
+function download(name,content,type){const b=new Blob([content],{type}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+function sortedItems(t){return CATS.flatMap(c=>t.items.filter(x=>x.cat===c)).concat(t.items.filter(x=>!CATS.includes(x.cat)))}
+function exportTripCsv(){
+ const t=activeTrip();if(!t)return;
+ const rows=[["Categorie","Item","Hoeveelheid / opmerking","Ingepakt"],...sortedItems(t).map(x=>[x.cat,x.name,x.qty||"",x.done?"Ja":"Nee"])];
+ const csv=rows.map(r=>r.map(v=>'"'+String(v??"").replaceAll('"','""')+'"').join(";")).join("\r\n");
+ download(fileSafe(t.name)+".csv","﻿"+csv,"text/csv;charset=utf-8");
+}
+function tripText(t){
+ const head=[t.name||"Paklijst",[t.date?fmtDate(t.date):"",t.days?t.days+" dagen":"",PROFILE_NAMES[t.profile]||""].filter(Boolean).join(" · ")].filter(Boolean).join("\n");
+ return head+"\n"+CATS.map(c=>{const a=t.items.filter(x=>x.cat===c);return a.length?`\n${c}\n`+a.map(x=>`${x.done?"☑":"☐"} ${x.name}${x.qty?" ("+x.qty+")":""}`).join("\n"):""}).join("");
+}
+async function shareTripText(){
+ const t=activeTrip();if(!t)return;const text=tripText(t);
+ if(navigator.share){try{await navigator.share({title:t.name||"Paklijst",text});return}catch(e){if(e?.name==="AbortError")return}}
+ download(fileSafe(t.name)+".txt",text,"text/plain;charset=utf-8");
+}
+function backupPayload(){return {app:"Paklijst",version:VERSION,exportedAt:new Date().toISOString(),localStorage:{[KEY]:db}}}
+async function shareBackup(){
+ const json=JSON.stringify(backupPayload(),null,2),name="paklijst-backup-"+new Date().toISOString().slice(0,10)+".json";
+ let file=null;try{file=new File([json],name,{type:"application/json"})}catch(e){}
+ if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+  try{await navigator.share({title:"Paklijst backup",text:"Paklijst backup — importeer dit bestand op je andere apparaat.",files:[file]});return}
+  catch(e){if(e?.name==="AbortError")return}
+ }
+ download(name,json,"application/json;charset=utf-8");
+ alert("Backupbestand opgeslagen. Stuur het bijvoorbeeld via WhatsApp, e-mail of AirDrop naar je andere apparaat en kies daar ‘Backup importeren’.");
+}
+async function restoreBackup(file){
+ try{
+  const p=JSON.parse(await file.text());
+  let data=p?.localStorage?.[KEY]??p?.[KEY]??p;
+  if(typeof data==="string")data=JSON.parse(data);
+  if(!data||!Array.isArray(data.master)||!Array.isArray(data.trips))throw new Error("Dit bestand bevat geen Paklijst-gegevens.");
+  if(!confirm(`Backup bevat ${data.master.length} masteritems en ${data.trips.length} reis/reizen.\n\nJe huidige gegevens op dit apparaat worden vervangen. Doorgaan?`))return;
+  localStorage.setItem(KEY,JSON.stringify(data));
+  alert("Backup geïmporteerd. De Paklijst wordt opnieuw geladen.");location.reload();
+ }catch(err){alert("Importeren mislukt: "+err.message)}
+}
+
+/* ---------- Init ---------- */
+document.getElementById("profile").innerHTML=`<option value="">Kies een profiel…</option>`+Object.entries(PROFILE_NAMES).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+document.getElementById("icat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");
+document.getElementById("profiles").innerHTML=Object.entries(PROFILE_NAMES).map(([k,v])=>`<label class="checkopt"><input type="checkbox" value="${k}">${v}</label>`).join("");
+document.getElementById("masterCat").innerHTML=`<option value="">Alle categorieën</option>`+CATS.map(c=>`<option>${c}</option>`).join("");
+const FIELD={tripName:"name",tripDate:"date",days:"days",profile:"profile"};
+Object.keys(FIELD).forEach(id=>{const e=document.getElementById(id);e.addEventListener(id==="tripName"?"input":"change",()=>{const t=activeTrip();if(!t)return;t[FIELD[id]]=e.value;id==="tripName"?persist():save()});});
+document.getElementById("tripName").addEventListener("blur",render);
+document.getElementById("profile").addEventListener("change",e=>{if(e.target.value&&confirm(`Profiel ${PROFILE_NAMES[e.target.value]} gekozen. Passende items uit je masterlijst nu toevoegen?`))applySmart()});
+document.getElementById("search").oninput=render;document.getElementById("filter").onchange=render;
+document.getElementById("masterSearch").oninput=render;document.getElementById("masterCat").onchange=render;
 document.getElementById("modalback").onclick=e=>{if(e.target===e.currentTarget)closeModal()};
-if(db.trips.length&&!db.active)db.active=db.trips[0].id;
-page(db.trips.length?"pack":"trips");
-if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
-</script>
-<section class="v3-export-panel" id="v3ExportPanel">
-<h3>Export & backup</h3>
-<div class="v3-small">De app gebruikt alleen lokale opslag. Maak af en toe een JSON-backup om je gegevens veilig te bewaren.</div>
-<div class="v3-export-grid" style="margin-top:12px">
-<button type="button" id="v3ExportCsv">Huidige reis → CSV</button>
-<button type="button" id="v3ExportTxt">Huidige reis → tekst</button>
-<button type="button" id="v3ExportJson">Volledige backup → JSON</button>
-<button type="button" id="v3ImportJson">JSON backup herstellen</button>
-<input type="file" id="v3ImportFile" accept=".json,application/json" hidden>
-</div>
-</section>
-<nav class="v3-bottom-nav" aria-label="Snelle acties">
-<button type="button" id="v3NavTop">⬆️ Boven</button>
-<button type="button" id="v3NavExport">📤 Export</button>
-<button type="button" id="v3NavNew">➕ Nieuwe reis</button>
-</nav>
-
-<script id="v3-enhancements">
-(()=> {
- const download=(name,content,type)=>{const b=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
- const storage=()=>{const o={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);try{o[k]=JSON.parse(localStorage.getItem(k))}catch{o[k]=localStorage.getItem(k)}}return o};
- const state=()=>{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i),r=localStorage.getItem(k);try{const v=JSON.parse(r);if(v&&typeof v==='object'&&(v.items||v.trips||v.masterItems||v.currentTrip||v.activeTrip))return v}catch{}}return null};
- const tripName=()=>{const s=state();return String(s?.currentTrip?.name||s?.activeTrip?.name||s?.trip?.name||'paklijst').replace(/[^\w-]+/g,'-').toLowerCase()};
- const items=()=>{const s=state()||{};const t=s.currentTrip||s.activeTrip||s.trip;return (t&&(t.items||t.list))||s.items||s.masterItems||[]};
- const csv=()=>{const rows=[['Categorie','Item','Aantal','Notitie','Afgevinkt']];for(const x of items())rows.push([x.category||x.cat||'',x.name||x.title||'',x.quantity||x.qty||1,x.note||'',x.checked||x.done?'Ja':'Nee']);return rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n')};
- const txt=()=>items().map(x=>`${x.checked||x.done?'✓':'☐'} ${x.name||x.title||'Item'}${x.quantity?' ('+x.quantity+')':''}${x.note?' — '+x.note:''}`).join('\n');
- document.getElementById('v3ExportCsv')?.addEventListener('click',()=>download(tripName()+'.csv','\ufeff'+csv(),'text/csv;charset=utf-8'));
- document.getElementById('v3ExportTxt')?.addEventListener('click',()=>{const t=txt();if(navigator.share)navigator.share({title:'Paklijst',text:t}).catch(()=>download(tripName()+'.txt',t,'text/plain;charset=utf-8'));else download(tripName()+'.txt',t,'text/plain;charset=utf-8')});
- document.getElementById('v3ExportJson')?.addEventListener('click',()=>download('paklijst-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify({app:'Paklijst v3',exportedAt:new Date().toISOString(),localStorage:storage()},null,2),'application/json;charset=utf-8'));
- const fi=document.getElementById('v3ImportFile');
- document.getElementById('v3ImportJson')?.addEventListener('click',()=>fi?.click());
- fi?.addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const p=JSON.parse(await f.text()),d=p.localStorage||p;if(!d||typeof d!=='object')throw Error('Ongeldige backup');if(!confirm('Dit vervangt de lokale gegevens op dit apparaat. Doorgaan?'))return;for(const[k,v]of Object.entries(d))localStorage.setItem(k,typeof v==='string'?v:JSON.stringify(v));alert('Backup hersteld. De app wordt opnieuw geladen.');location.reload()}catch(err){alert('Backup kon niet worden hersteld: '+err.message)}finally{e.target.value=''}});
- document.getElementById('v3NavTop')?.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
- document.getElementById('v3NavExport')?.addEventListener('click',()=>document.getElementById('v3ExportPanel')?.scrollIntoView({behavior:'smooth'}));
- document.getElementById('v3NavNew')?.addEventListener('click',()=>{const b=[...document.querySelectorAll('button')].find(x=>/nieuwe reis|new trip/i.test(x.textContent));b?.click()});
-})();
-</script>
-
-<script id="v31-enhancements">
-(() => {
-  // v3.1: on a completely new device, create the first trip automatically.
-  // Existing data is never overwritten.
-  try {
-    if (typeof db !== 'undefined' && db && Array.isArray(db.trips) && db.trips.length === 0) {
-      const t = {
-        id: "t" + Date.now(),
-        name: "Mijn eerste reis",
-        date: "",
-        days: "",
-        profile: "",
-        items: []
-      };
-      if (typeof buildFromMaster === "function") buildFromMaster(t);
-      db.trips.unshift(t);
-      db.active = t.id;
-      localStorage.setItem("paklijst-v2", JSON.stringify(db));
-    }
-  } catch (e) {}
-
-  const backupPayload = () => {
-    const localStorageData = {};
-    for (let i=0; i<localStorage.length; i++) {
-      const k = localStorage.key(i);
-      try { localStorageData[k] = JSON.parse(localStorage.getItem(k)); }
-      catch { localStorageData[k] = localStorage.getItem(k); }
-    }
-    return {
-      app: "Paklijst",
-      version: "3.1",
-      exportedAt: new Date().toISOString(),
-      localStorage: localStorageData
-    };
-  };
-
-  const restore = async (file) => {
-    try {
-      const payload = JSON.parse(await file.text());
-      const data = payload.localStorage || payload;
-      if (!data || typeof data !== "object") throw new Error("Dit is geen geldige Paklijst-backup.");
-      if (!data["paklijst-v2"]) throw new Error("Deze backup bevat geen Paklijst-gegevens.");
-      if (!confirm("Je huidige gegevens op dit apparaat worden vervangen door de backup. Doorgaan?")) return;
-      for (const [key, value] of Object.entries(data)) {
-        localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
-      }
-      alert("Backup geïmporteerd. De Paklijst wordt opnieuw geladen.");
-      location.reload();
-    } catch (err) {
-      alert("Importeren mislukt: " + err.message);
-    }
-  };
-
-  document.getElementById("v31ImportFile")?.addEventListener("change", e => {
-    const file = e.target.files?.[0];
-    if (file) restore(file);
-    e.target.value = "";
-  });
-
-  window.v31ShareBackup = async () => {
-    const json = JSON.stringify(backupPayload(), null, 2);
-    const file = new File(
-      [json],
-      "paklijst-backup-" + new Date().toISOString().slice(0,10) + ".json",
-      {type:"application/json"}
-    );
-
-    if (navigator.canShare && navigator.canShare({files:[file]})) {
-      try {
-        await navigator.share({
-          title: "Paklijst backup",
-          text: "Paklijst backup — importeer dit bestand op je iPhone/iPad.",
-          files: [file]
-        });
-        return;
-      } catch (e) {
-        if (e && e.name === "AbortError") return;
-      }
-    }
-
-    const url = URL.createObjectURL(file);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = file.name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    alert("Backupbestand gemaakt. Stuur dit JSON-bestand bijvoorbeeld via WhatsApp, e-mail of AirDrop naar je iPhone.");
-  };
-
-  // Replace the generic JSON export with the share-friendly v3.1 version.
-  document.getElementById("v3ExportJson")?.addEventListener("click", () => window.v31ShareBackup());
-
-  // If the page was opened without an active trip, go straight to the newly created one.
-  try {
-    if (typeof db !== "undefined" && db?.trips?.length && typeof page === "function") {
-      if (!db.active) db.active = db.trips[0].id;
-      localStorage.setItem("paklijst-v2", JSON.stringify(db));
-      page("pack");
-    }
-  } catch (e) {}
-
-  // Service worker for real installable PWA behavior.
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
-})();
+document.addEventListener("keydown",e=>{if(document.getElementById("modalback").style.display==="flex"){if(e.key==="Escape")closeModal();if(e.key==="Enter"&&e.target.tagName==="INPUT"&&e.target.type!=="checkbox")saveItem()}});
+document.getElementById("importFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)restoreBackup(f);e.target.value=""});
+page(activeTrip()?"pack":"trips");
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body></html>
