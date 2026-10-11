@@ -1,6 +1,10 @@
-# Paklijst v3.3
+# Paklijst v3.4
 
 Persoonlijke, offline-first paklijst voor GitHub Pages.
+
+## v3.4 — compacter
+- Versienummer zichtbaar in de kop en onderaan de pagina.
+- Compacte lijst: één blok per categorie met dunne scheidingslijnen in plaats van een losse kaart per regel. Regels zijn nu ±40px hoog (was ±64px).
 
 ## v3.3 — slepen
 - Elke regel heeft rechts een greep **⠿**. Houd die vast en sleep het item naar een andere plek.

@@ -44,9 +44,30 @@ button,input,select{min-height:44px}input,select{font-size:16px!important}button
 body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
 @media print{.grip{display:none!important}header,.toolbar,.actions,.icons,.modalback,.bottom-nav,.noprint{display:none!important}body{background:white;padding:0}.card{border:0;box-shadow:none}}
 </style>
+<style id="compact">
+/* v3.4: compacte lijst — één blok per categorie, dunne scheidingslijnen */
+.cat{margin-bottom:12px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cathead{margin:0;padding:7px 12px;background:#f7f8fa;border-bottom:1px solid var(--line)}
+.cathead h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.item{gap:8px;padding:0 0 0 12px;margin:0;border:0;border-bottom:1px solid #eef0f3;border-radius:0;min-height:40px}
+.cat .item:last-child{border-bottom:0}
+.item .name{font-size:15px;line-height:1.25;padding:9px 0}
+.item .tag{font-size:12px}
+.check{width:20px;height:20px;min-height:20px;margin:0;flex:none}
+.item .icons{gap:0}
+.item .icon,.item .grip{min-height:40px;height:40px;width:32px;padding:0;margin:0;display:flex;align-items:center;justify-content:center;flex:none}
+.item .grip{width:36px;font-size:18px;align-self:stretch;height:auto}
+.item.placeholder{border:2px dashed var(--gold);border-radius:8px;margin:2px}
+.item.dragging{border:1px solid var(--line);border-radius:10px;background:#fff}
+@media(max-width:700px){.item .icon{width:28px}.item .name{font-size:15px}}
+.version{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;background:#ffffff1f;font-size:11px;font-weight:700;letter-spacing:.02em;vertical-align:middle}
+.appfoot{text-align:center;font-size:12px;color:var(--muted);margin:18px 0 6px}
+.item .tag:empty{display:none}
+@media print{.cat{border:0}.cathead{background:none}}
+</style>
 </head>
 <body>
-<header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim</div></div><button class="btn gold" onclick="headerAdd()">＋ Item</button></div>
+<header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim <span class="version" id="appVersion"></span></div></div><button class="btn gold" onclick="headerAdd()">＋ Item</button></div>
 <nav class="top"><button id="navTrips" onclick="page('trips')">Mijn reizen</button><button id="navPack" onclick="page('pack')">Paklijst</button><button id="navMaster" onclick="page('master')">Masterlijst</button></nav></header>
 
 <main>
@@ -80,6 +101,7 @@ body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
  <div class="card"><div class="toolbar"><input id="masterSearch" placeholder="🔎 Zoek in masterlijst…"><select class="btn" id="masterCat"></select></div></div>
  <div id="masterList"></div>
 </section>
+<div class="appfoot noprint">Paklijst <span id="appVersionFoot"></span> · gegevens staan alleen op dit apparaat</div>
 </main>
 
 <nav class="bottom-nav" aria-label="Snelle acties">
@@ -101,7 +123,7 @@ body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
 </div></div>
 
 <script>
-const KEY="paklijst-v2", VERSION="3.3";
+const KEY="paklijst-v2", VERSION="3.4";
 const CATS=["Voor vertrek","Dag van vertrek","Vliegen","Toilettas","Apparatuur","Kleding","Schoenen","Overig"];
 const PROFILE_NAMES={city:"🏙️ Citytrip",beach:"🏖️ Strand / warm",cold:"❄️ Koud weer",business:"💼 Zakenreis",road:"🚗 Roadtrip",hiking:"🥾 Outdoor / wandelen"};
 // Standaard profielkoppelingen (op itemnaam). Aanpasbaar per item in de masterlijst.
@@ -332,6 +354,7 @@ async function restoreBackup(file){
 }
 
 /* ---------- Init ---------- */
+document.getElementById("appVersion").textContent="v"+VERSION;document.getElementById("appVersionFoot").textContent="v"+VERSION;
 document.getElementById("profile").innerHTML=`<option value="">Kies een profiel…</option>`+Object.entries(PROFILE_NAMES).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
 document.getElementById("icat").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");
 document.getElementById("profiles").innerHTML=Object.entries(PROFILE_NAMES).map(([k,v])=>`<label class="checkopt"><input type="checkbox" value="${k}">${v}</label>`).join("");
