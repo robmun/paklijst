@@ -1,6 +1,12 @@
-# Paklijst v3.4
+# Paklijst v3.5
 
 Persoonlijke, offline-first paklijst voor GitHub Pages.
+
+## v3.5 — itemvenster
+- Het venster om een item te bewerken past altijd op het scherm, ook op de iPhone met de Safari-balken.
+- Kop met ✕ om te sluiten; Annuleren en Opslaan staan vast onderin. Is er meer inhoud, dan scrolt alleen het midden.
+- Profielen staan compact in twee kolommen (de vinkjes werden eerst over de volle breedte opgerekt).
+- De pagina erachter scrolt niet meer mee.
 
 ## v3.4 — compacter
 - Versienummer zichtbaar in de kop en onderaan de pagina.

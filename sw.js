@@ -1,7 +1,7 @@
 // Paklijst service worker.
 // Pagina's: eerst netwerk (zodat updates direct binnenkomen), cache als je offline bent.
 // Overige bestanden: uit de cache, en op de achtergrond ververst.
-const CACHE='paklijst-v34';
+const CACHE='paklijst-v35';
 const ASSETS=['./','./index.html','./manifest.json','./icon.svg','./apple-touch-icon.png','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));

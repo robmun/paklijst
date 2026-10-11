@@ -65,6 +65,28 @@ body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
 .item .tag:empty{display:none}
 @media print{.cat{border:0}.cathead{background:none}}
 </style>
+<style id="modal-v35">
+/* v3.5: itemvenster past altijd op het scherm; kop met ✕ en knoppen blijven zichtbaar */
+.modalback{align-items:center;padding:max(12px,var(--safe-top)) 12px max(12px,var(--safe-bottom))}
+.modal{display:flex;flex-direction:column;padding:0;width:min(520px,100%);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px - var(--safe-top) - var(--safe-bottom));overflow:hidden}
+.modalhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 10px 6px 16px;flex:none}
+.modalhead h2{margin:0;font-size:17px}
+.modalx{border:0;background:#f1f3f6;color:var(--text);width:36px;height:36px;min-height:36px;border-radius:50%;font-size:16px;cursor:pointer;flex:none}
+.modalbody{padding:4px 16px 8px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1 1 auto}
+.modal .field{margin-bottom:10px}
+.field input,.field select{padding:9px 11px;min-height:42px}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modalfoot{flex:none;padding:10px 16px 12px;border-top:1px solid var(--line);background:#fff}
+.modalfoot .btn{min-width:110px}
+.field .checkopt,.checkopt{display:flex;align-items:center;gap:8px;margin:0;padding:8px 10px;min-height:40px;font-size:14px;color:var(--text);border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.field .checkopt input,.checkopt input{width:20px;height:20px;min-height:0;margin:0;flex:none;accent-color:var(--navy)}
+.checkopt.always{margin-bottom:10px}
+.checkopt small,.field label small{color:var(--muted);font-weight:400}
+.checkgrid{grid-template-columns:1fr 1fr;gap:6px}
+@media(max-width:650px){.checkgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:360px){.mrow,.checkgrid{grid-template-columns:1fr}}
+body.modal-open{overflow:hidden}
+</style>
 </head>
 <body>
 <header><div class="hrow"><div><div class="brand">🧳 Paklijst</div><div class="sub">persoonlijk · lokaal · slim <span class="version" id="appVersion"></span></div></div><button class="btn gold" onclick="headerAdd()">＋ Item</button></div>
@@ -110,20 +132,24 @@ body.is-dragging{user-select:none;-webkit-user-select:none;cursor:grabbing}
  <button type="button" class="btn" onclick="newTrip()">➕ Nieuwe reis</button>
 </nav>
 
-<div class="modalback" id="modalback"><div class="modal">
- <h2 id="modalTitle">Item</h2>
- <div class="field"><label>Naam</label><input id="iname"></div>
- <div class="field"><label>Categorie</label><select id="icat"></select></div>
- <div class="field"><label>Hoeveelheid / opmerking</label><input id="iqty" placeholder="Bijv. 5x"></div>
- <div id="masterFields">
-  <div class="field"><label class="checkopt" style="color:var(--text);font-size:15px"><input type="checkbox" id="ialways">⭐ Altijd meenemen (in elke nieuwe reis)</label></div>
-  <div class="field"><label>Hoort bij profielen (voor ✨ Slim aanvullen)</label><div class="checkgrid" id="profiles"></div></div>
+<div class="modalback" id="modalback"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+ <div class="modalhead"><h2 id="modalTitle">Item</h2><button class="modalx" type="button" aria-label="Sluiten" onclick="closeModal()">✕</button></div>
+ <div class="modalbody">
+  <div class="field"><label for="iname">Naam</label><input id="iname" enterkeyhint="done"></div>
+  <div class="mrow">
+   <div class="field"><label for="icat">Categorie</label><select id="icat"></select></div>
+   <div class="field"><label for="iqty">Aantal / opmerking</label><input id="iqty" placeholder="Bijv. 5x" enterkeyhint="done"></div>
+  </div>
+  <div id="masterFields">
+   <label class="checkopt always"><input type="checkbox" id="ialways"><span>⭐ Altijd meenemen <small>(in elke nieuwe reis)</small></span></label>
+   <div class="field"><label>Hoort bij profielen <small>(voor ✨ Slim aanvullen)</small></label><div class="checkgrid" id="profiles"></div></div>
+  </div>
  </div>
- <div class="modalfoot"><button class="btn" onclick="closeModal()">Annuleren</button><button class="btn primary" onclick="saveItem()">Opslaan</button></div>
+ <div class="modalfoot"><button class="btn" type="button" onclick="closeModal()">Annuleren</button><button class="btn primary" type="button" onclick="saveItem()">Opslaan</button></div>
 </div></div>
 
 <script>
-const KEY="paklijst-v2", VERSION="3.4";
+const KEY="paklijst-v2", VERSION="3.5";
 const CATS=["Voor vertrek","Dag van vertrek","Vliegen","Toilettas","Apparatuur","Kleding","Schoenen","Overig"];
 const PROFILE_NAMES={city:"🏙️ Citytrip",beach:"🏖️ Strand / warm",cold:"❄️ Koud weer",business:"💼 Zakenreis",road:"🚗 Roadtrip",hiking:"🥾 Outdoor / wandelen"};
 // Standaard profielkoppelingen (op itemnaam). Aanpasbaar per item in de masterlijst.
@@ -291,7 +317,7 @@ function openItem(id=null,master=false){
  document.getElementById("masterFields").style.display=master?"":"none";
  document.getElementById("ialways").checked=x?x.always:true;
  document.querySelectorAll("#profiles input").forEach(c=>c.checked=!!x?.profiles?.includes(c.value));
- document.getElementById("modalback").style.display="flex";
+ document.getElementById("modalback").style.display="flex";document.body.classList.add("modal-open");document.querySelector(".modalbody").scrollTop=0;
  if(!id)setTimeout(()=>document.getElementById("iname").focus(),30);
 }
 function saveItem(){
@@ -308,7 +334,7 @@ function saveItem(){
  }
  closeModal();save();
 }
-function closeModal(){document.getElementById("modalback").style.display="none"}
+function closeModal(){document.getElementById("modalback").style.display="none";document.body.classList.remove("modal-open")}
 function removeMaster(id){const x=db.master.find(x=>x.id===id);if(x&&confirm(`"${x.name}" verwijderen uit de masterlijst?\n(Bestaande reizen blijven ongewijzigd.)`)){db.master=db.master.filter(x=>x.id!==id);save()}}
 
 /* ---------- Export & backup ---------- */
